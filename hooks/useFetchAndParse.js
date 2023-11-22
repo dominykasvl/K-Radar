@@ -24,7 +24,7 @@ export const useFetchAndParse = (url, corsProxy) => {
               if (titleDivs.length !== 1) return null;
               const titleElement = htmlparser2.DomUtils.findOne(el => el.name === 'a', titleDivs[0].children);
               const title = titleElement ? htmlparser2.DomUtils.getText(titleElement) : null;
-              const link = titleElement ? fetchUrl + htmlparser2.DomUtils.getAttributeValue(titleElement, 'href') : null;
+              const link = titleElement ? url + htmlparser2.DomUtils.getAttributeValue(titleElement, 'href') : null;
             
               //return image
               const imageDivs = htmlparser2.DomUtils.findAll(el => el.attribs && el.attribs.class && el.attribs.class.split(' ').includes('image'), article.children);

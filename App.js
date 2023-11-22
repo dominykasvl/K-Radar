@@ -7,6 +7,8 @@ import { GestureHandlerRootView } from "react-native-gesture-handler";
 import * as MediaLibrary from 'expo-media-library';
 import { captureRef } from 'react-native-view-shot';
 import domtoimage from 'dom-to-image';
+import * as WebBrowser from 'expo-web-browser';
+import NetInfo from '@react-native-community/netinfo';
 
 import ImageViewer from './components/ImageViewer';
 import Button from './components/Button';
@@ -83,7 +85,21 @@ const App = () => {
 
   const url = config.website;
   const corsProxy = config.proxyUrl;
-  const { data, error } = useFetchAndParse(url, corsProxy); console.log(data);
+  const { data, error } = useFetchAndParse(url, corsProxy);
+
+  const onOpenWithWebBrowser = async (url) => {
+    try {
+      const netInfo = await NetInfo.fetch();
+      if (!netInfo.isConnected && !netInfo.isInternetReachable) {
+        alert('No internet connection');
+        return;
+      }
+  
+      await WebBrowser.openBrowserAsync(url);
+    } catch (error) {
+      console.error("Failed to open browser:", error);
+    }
+  };
 
   const onReset = () => {
     setShowAppOptions(false);
@@ -138,6 +154,7 @@ const App = () => {
               <ImageViewer
                 placeholderImageSource={PlaceholderImage}
                 data={data}
+                onPress={onOpenWithWebBrowser}
               />
               {/* {pickedEmoji !== null ? <EmojiSticker imageSize={40} stickerSource={pickedEmoji} /> : null} */}
             </View>
