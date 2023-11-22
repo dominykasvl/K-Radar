@@ -8,7 +8,7 @@ const WebViewComponent = ({ data }) => {
             // Render web specific view
             return (
                 <View>
-                    {data ? <div dangerouslySetInnerHTML={{ __html: data }} /> : <Text style={{ color: '#fff' }}>Loading...</Text>}
+                    {data ? <div dangerouslySetInnerHTML={{ __html: data[0].image }} /> : <Text style={{ color: '#fff' }}>Loading...</Text>}
                 </View>
             );
         } else {

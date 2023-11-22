@@ -83,7 +83,7 @@ const App = () => {
 
   const url = config.website;
   const corsProxy = config.proxyUrl;
-  const { data, error } = useFetchAndParse(url, corsProxy);
+  const { data, error } = useFetchAndParse(url, corsProxy); console.log(data);
 
   const onReset = () => {
     setShowAppOptions(false);
@@ -137,12 +137,12 @@ const App = () => {
             <View ref={imageRef} collapsable={false}>
               <ImageViewer
                 placeholderImageSource={PlaceholderImage}
-                selectedImage={selectedImage}
+                data={data}
               />
-              {pickedEmoji !== null ? <EmojiSticker imageSize={40} stickerSource={pickedEmoji} /> : null}
+              {/* {pickedEmoji !== null ? <EmojiSticker imageSize={40} stickerSource={pickedEmoji} /> : null} */}
             </View>
           </View>
-          {showAppOptions ? (
+          {/* {showAppOptions ? (
             <View style={styles.optionsContainer}>
               <View style={styles.optionsRow}>
                 <IconButton icon="refresh" label="Reset" onPress={onReset} />
@@ -158,10 +158,10 @@ const App = () => {
           )}
           <EmojiPicker isVisible={isModalVisible} onClose={onModalClose}>
             <EmojiList onSelect={setPickedEmoji} onCloseModal={onModalClose} />
-          </EmojiPicker>
+          </EmojiPicker> */}
           <StatusBar style="light" />
         </View>
-        <WebViewComponent data={data} />
+        {/* <WebViewComponent data={data} /> */}
       </View>
     </GestureHandlerRootView>
   );
