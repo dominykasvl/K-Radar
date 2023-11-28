@@ -20,6 +20,7 @@ import EmojiSticker from './components/EmojiSticker';
 import WebViewComponent from './components/WebViewComponent';
 
 import { useFetchAndParse } from './hooks/useFetchAndParse';
+import { useFetchAndSummarize } from './hooks/useFetchAndSummarize';
 import config from './config/config.json';
 
 const PlaceholderImage = require('./assets/images/background-image.png');
@@ -85,7 +86,13 @@ const App = () => {
 
   const url = config.website;
   const corsProxy = config.proxyUrl;
+  const summariesAPI = config.summariesAPI;
   const { data, error } = useFetchAndParse(url, corsProxy);
+  console.log('data:', data);
+  console.log('error:', error);
+  const { data: summaries, errorWithSummaries } = useFetchAndSummarize(data, summariesAPI, corsProxy);
+  console.log('summaries:', summaries);
+  console.log('errorWithSummaries:', errorWithSummaries);
 
   const onOpenWithWebBrowser = async (url) => {
     try {

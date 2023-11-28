@@ -1,23 +1,33 @@
-import React, { memo } from 'react';
+import React, { memo, useState } from 'react';
 import { StyleSheet, Image, Text, View, ActivityIndicator, Pressable, FlatList } from 'react-native';
 import moment from 'moment';
 import MaterialIcons from '@expo/vector-icons/MaterialIcons';
 
 const Item = memo(({ item, onPress, placeholderImageSource }) => {
+    const [showSummary, setShowSummary] = useState(false);
     const imageSource = item.image ? { uri: item.image } : placeholderImageSource;
     const timestamp = moment.unix(item.timestamp).format('MMMM Do YYYY, h:mm a');
 
     return (
-        <View style={styles.imageContainer}>
+        <Pressable
+            onPressIn={() => setShowSummary(true)}
+            onPressOut={() => setShowSummary(false)}
+            style={styles.imageContainer}
+        >
             <Image source={imageSource} style={styles.image} />
             <View style={styles.textContainer}>
                 <Text style={styles.title}>{item.title}</Text>
                 <Text style={styles.timestamp}>{timestamp}</Text>
+                {showSummary && (
+                    <Text style={styles.summary}>
+                        {item.summary || 'Loading summaries...'}
+                    </Text>
+                )}
             </View>
             <Pressable onPress={() => onPress(item.link)} style={styles.pressable}>
                 <MaterialIcons name="open-in-browser" size={24} color="white" />
             </Pressable>
-        </View>
+        </Pressable>
     );
 }, (prevProps, nextProps) => prevProps.item === nextProps.item && prevProps.onPress === nextProps.onPress);
 
@@ -81,4 +91,8 @@ const styles = StyleSheet.create({
       fontSize: 16,
       color: 'white',
   },
+  summary: {
+    fontSize: 16,
+    color: 'white',
+    },
 });

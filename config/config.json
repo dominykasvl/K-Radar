@@ -1,4 +1,5 @@
 {
     "website": "https://www.allkpop.com",
-    "proxyUrl": "https://api.allorigins.win/get?url="
+    "proxyUrl": "https://192.168.0.167:3000/proxy?url=",
+    "summariesAPI": "https://192.168.0.167:3000/summarize"
 }
