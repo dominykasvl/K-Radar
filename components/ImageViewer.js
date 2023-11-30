@@ -1,5 +1,5 @@
 import React, { memo, useState } from 'react';
-import { RefreshControl, StyleSheet, Image, Text, View, ActivityIndicator, Pressable, FlatList } from 'react-native';
+import { Platform, RefreshControl, StyleSheet, Image, Text, View, ActivityIndicator, Pressable, FlatList } from 'react-native';
 import moment from 'moment';
 import MaterialIcons from '@expo/vector-icons/MaterialIcons';
 
@@ -31,34 +31,64 @@ const Item = memo(({ item, onPress, placeholderImageSource }) => {
     );
 }, (prevProps, nextProps) => prevProps.item === nextProps.item && prevProps.onPress === nextProps.onPress);
 
+
 export default function ImageViewer({ placeholderImageSource, data, onPress, refreshing, onRefresh }) {
     if (!data) {
         return (
             <View style={styles.loadingContainer}>
                 <ActivityIndicator size="large" color="#0000ff" />
-                <Text color="white" >Loading...</Text>
+                <Text color="white">Loading...</Text>
             </View>
         );
     }
 
     return (
-        <FlatList
-            data={data}
-            renderItem={({ item }) => <Item item={item} onPress={onPress} placeholderImageSource={placeholderImageSource} />}
-            keyExtractor={(item, index) => index.toString()}
-            refreshControl={
-                <RefreshControl
-                  refreshing={refreshing}
-                  onRefresh={onRefresh}
+        <View style={styles.parentContainer}>
+            {Platform.OS === 'web' && (
+                <View style={styles.refreshButtonContainer}>
+                    <Pressable style={styles.pressableRefresh} onPress={onRefresh}>
+                        <MaterialIcons name="refresh" size={24} color="black" />
+                    </Pressable>
+                </View>
+            )}
+            <View style={styles.container}>
+                <FlatList
+                    data={data}
+                    renderItem={({ item }) => <Item item={item} onPress={onPress} placeholderImageSource={placeholderImageSource} />}
+                    keyExtractor={(item, index) => index.toString()}
+                    refreshControl={
+                        <RefreshControl
+                            refreshing={refreshing}
+                            onRefresh={onRefresh}
+                        />
+                    }
                 />
-              }
-        />
+            </View>
+        </View>
     );
 };
 
 const styles = StyleSheet.create({
+    parentContainer: {
+        flex: 1,
+    },
+    container: {
+        flex: 1,
+    },
+    refreshButtonContainer: {
+        padding: 10,
+    },
     loadingContainer: {
         flex: 1,
+        justifyContent: 'center',
+        alignItems: 'center',
+    },
+    pressableRefresh: {
+        position: 'absolute',
+        top: 0,
+        bottom: 0,
+        left: 0,
+        right: 0,
         justifyContent: 'center',
         alignItems: 'center',
     },

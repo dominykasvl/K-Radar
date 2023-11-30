@@ -13,7 +13,7 @@ app.use(express.json()); // for parsing application/json
 
 // Logging middleware
 app.use((req, res, next) => {
-  const timestamp = new Date().toISOString();
+  const timestamp = new Date().toLocaleString("en-US", { timeZone: "Europe/Vilnius" });
   console.log(`[${timestamp}] New ${req.method} request to ${req.path}`);
   next();
 });
