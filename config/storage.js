@@ -8,6 +8,13 @@ let storage = {
   setItem: async (key, value) => {
     await AsyncStorage.setItem(key, value);
   },
+  clear: async () => {
+    try {
+      await AsyncStorage.clear();
+    } catch (error) {
+      console.error("Failed to clear AsyncStorage: ", error);
+    }
+  },
 };
 
 export default storage;

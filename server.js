@@ -11,6 +11,13 @@ const SummarizerManager = require("node-summarizer").SummarizerManager;
 app.use(cors()); // Enable All CORS Requests
 app.use(express.json()); // for parsing application/json
 
+// Logging middleware
+app.use((req, res, next) => {
+  const timestamp = new Date().toISOString();
+  console.log(`[${timestamp}] New ${req.method} request to ${req.path}`);
+  next();
+});
+
 app.get('/proxy', async (req, res) => {
   try {
     const url = req.query.url;
@@ -21,6 +28,7 @@ app.get('/proxy', async (req, res) => {
     res.status(500).json({ error: 'An error occurred while fetching the webpage' });
   }
 });
+
 
 app.post('/summarize', async (req, res) => {
   try {
@@ -37,8 +45,8 @@ app.post('/summarize', async (req, res) => {
 
 // SSL options
 const options = {
-  key: fs.readFileSync('./key.pem'),
-  cert: fs.readFileSync('./cert.pem')
+  key: fs.readFileSync('./server.key'),
+  cert: fs.readFileSync('./server.crt')
 };
 
 https.createServer(options, app).listen(port, () => {

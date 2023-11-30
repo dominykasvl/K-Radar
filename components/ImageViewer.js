@@ -1,5 +1,5 @@
 import React, { memo, useState } from 'react';
-import { StyleSheet, Image, Text, View, ActivityIndicator, Pressable, FlatList } from 'react-native';
+import { RefreshControl, StyleSheet, Image, Text, View, ActivityIndicator, Pressable, FlatList } from 'react-native';
 import moment from 'moment';
 import MaterialIcons from '@expo/vector-icons/MaterialIcons';
 
@@ -31,7 +31,7 @@ const Item = memo(({ item, onPress, placeholderImageSource }) => {
     );
 }, (prevProps, nextProps) => prevProps.item === nextProps.item && prevProps.onPress === nextProps.onPress);
 
-export default function ImageViewer({ placeholderImageSource, data, onPress }) {
+export default function ImageViewer({ placeholderImageSource, data, onPress, refreshing, onRefresh }) {
     if (!data) {
         return (
             <View style={styles.loadingContainer}>
@@ -46,6 +46,12 @@ export default function ImageViewer({ placeholderImageSource, data, onPress }) {
             data={data}
             renderItem={({ item }) => <Item item={item} onPress={onPress} placeholderImageSource={placeholderImageSource} />}
             keyExtractor={(item, index) => index.toString()}
+            refreshControl={
+                <RefreshControl
+                  refreshing={refreshing}
+                  onRefresh={onRefresh}
+                />
+              }
         />
     );
 };

@@ -1,5 +1,5 @@
 {
     "website": "https://www.allkpop.com",
-    "proxyUrl": "https://192.168.0.167:3000/proxy?url=",
-    "summariesAPI": "https://192.168.0.167:3000/summarize"
+    "proxyUrl": "https://192.168.8.121:3000/proxy?url=",
+    "summariesAPI": "https://192.168.8.121:3000/summarize"
 }

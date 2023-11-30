@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useRef } from 'react';
-import { Text, View, Platform, Image } from 'react-native';
+import { RefreshControl, Text, View, Platform, Image } from 'react-native';
 import { StatusBar } from 'expo-status-bar';
 import { StyleSheet } from 'react-native';
 import * as ImagePicker from 'expo-image-picker';
@@ -22,6 +22,7 @@ import WebViewComponent from './components/WebViewComponent';
 import { useFetchAndParse } from './hooks/useFetchAndParse';
 import { useFetchAndSummarize } from './hooks/useFetchAndSummarize';
 import config from './config/config.json';
+import storage from './config/storage';
 
 const PlaceholderImage = require('./assets/images/background-image.png');
 
@@ -53,6 +54,12 @@ const styles = StyleSheet.create({
     borderRadius: 18,
   },
 });
+
+const wait = (timeout) => {
+  return new Promise(resolve => {
+    setTimeout(resolve, timeout);
+  });
+}
 
 const App = () => {
   const [status, requestPermission] = MediaLibrary.usePermissions();
@@ -152,7 +159,17 @@ const App = () => {
     }
   };
 
+  const [refreshing, setRefreshing] = useState(false);
+
+  const onRefresh = React.useCallback(() => {
+    setRefreshing(true);
+    storage.clear().then(() => {
+      wait(2000).then(() => setRefreshing(false));
+    });
+  }, []);
+  
   return (
+    <View style={{ flex: 1 }}>
     <GestureHandlerRootView style={styles.container}>
       <View style={styles.container}>
         <View style={styles.container}>
@@ -162,6 +179,8 @@ const App = () => {
                 placeholderImageSource={PlaceholderImage}
                 data={data}
                 onPress={onOpenWithWebBrowser}
+                refreshing={refreshing}
+                onRefresh={onRefresh}
               />
               {/* {pickedEmoji !== null ? <EmojiSticker imageSize={40} stickerSource={pickedEmoji} /> : null} */}
             </View>
@@ -188,6 +207,7 @@ const App = () => {
         {/* <WebViewComponent data={data} /> */}
       </View>
     </GestureHandlerRootView>
+    </View>
   );
 };
 
