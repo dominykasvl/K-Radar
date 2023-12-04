@@ -63,16 +63,17 @@ const wait = (timeout) => {
 
 const App = () => {
   const imageRef = useRef();
+  const [refreshKey, setRefreshKey] = useState(0);
+  const [data, setData] = useState(null);
 
   const url = config.website;
   const corsProxy = config.proxyUrl;
   const summariesAPI = config.summariesAPI;
   
-  const { data, error } = useFetchAndParse(url, corsProxy);
+  const { error } = useFetchAndParse(url, corsProxy, refreshKey, setData);
   console.log('data:', data);
   console.log('error:', error);
-  const { data: summaries, errorWithSummaries } = useFetchAndSummarize(data, summariesAPI, corsProxy);
-  console.log('summaries:', summaries);
+  const { errorWithSummaries } = useFetchAndSummarize(data, summariesAPI, corsProxy, refreshKey, setData);
   console.log('errorWithSummaries:', errorWithSummaries);
 
   const onOpenWithWebBrowser = async (url) => {
@@ -94,9 +95,13 @@ const App = () => {
   const onRefresh = React.useCallback(() => {
     setRefreshing(true);
     storage.clear().then(() => {
-      wait(2000).then(() => setRefreshing(false));
+      wait(2000).then(() => {
+        setRefreshing(false);
+        setRefreshKey(refreshKey + 1);
+        setData(null); // Clear data
+      });
     });
-  }, []);
+  }, [refreshKey]);
 
   return (
     <View style={{ flex: 1 }}>

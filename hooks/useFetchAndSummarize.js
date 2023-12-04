@@ -4,7 +4,7 @@ import cheerio from 'cheerio';
 import sha256 from 'crypto-js/sha256';
 import storage from '../config/storage';
 
-export const useFetchAndSummarize = (data, apiUrl, corsProxy) => {
+export const useFetchAndSummarize = (data, apiUrl, corsProxy, refreshKey, setData) => {
   const [errorWithSummaries, setErrorWithSummaries] = useState(null);
 
   function summarizeText(text) {
@@ -35,45 +35,40 @@ export const useFetchAndSummarize = (data, apiUrl, corsProxy) => {
     return sentences[0];
 }
 
-  useEffect(() => {
-    if (!data) return;
+useEffect(() => {
+  if (!data || (data.length > 0 && data[0].summary)) return;
 
-    const fetchData = async () => {
-      try {
-        const storedSummaries = await storage.getItem('summaries');
-        const storedHash = await storage.getItem('summariesHash');
-        if (storedSummaries && storedHash && storedHash === sha256(storedSummaries).toString()) {
-          const summaries = JSON.parse(storedSummaries);
-          data.forEach((item, index) => {
-            if (summaries[index]) {
-              item.summary = summaries[index];
-            }
-          });
-          return;
-        }
+  const fetchData = async () => {
+    try {
+      const storedSummaries = await storage.getItem('summaries');
+      const storedHash = await storage.getItem('summariesHash');
+      if (storedSummaries && storedHash && storedHash === sha256(storedSummaries).toString()) {
+        const summaries = JSON.parse(storedSummaries);
+        const updatedData = data.map((item, index) => ({ ...item, summary: summaries[index] }));
+        setData(updatedData);
+        return;
+      }
 
-        const updatedData = [];
-        for (let i = 0; i < data.length; i++) {
+      const updatedData = [...data]; // Create a copy of data
+      for (let i = 0; i < updatedData.length; i++) {
           const response = await axios.get(corsProxy + encodeURIComponent(data[i].link));
           const $ = cheerio.load(response.data.contents);
           const articleText = $('#article-content').find('p').map((index, element) => $(element).text().trim()).get().join(' ');
           //const summaryResponse = await axios.post(apiUrl, { text: articleText });
           const summaryResponse = summarizeText(articleText);
           //updatedData.push(summaryResponse.data.summary);
-          updatedData.push(summaryResponse);
+          updatedData[i].summary = summaryResponse;
         }
-        data.forEach((item, index) => {
-          item.summary = updatedData[index];
-        });
-        await storage.setItem('summaries', JSON.stringify(updatedData));
-        await storage.setItem('summariesHash', sha256(JSON.stringify(updatedData)).toString());
+        setData(updatedData);
+        await storage.setItem('summaries', JSON.stringify(updatedData.map(item => item.summary)));
+        await storage.setItem('summariesHash', sha256(JSON.stringify(updatedData.map(item => item.summary))).toString());
       } catch (err) {
         setErrorWithSummaries(err);
       }
     };
 
     fetchData();
-  }, [data, apiUrl, corsProxy]);
+  }, [data, apiUrl, corsProxy, refreshKey]);
 
-  return { data, errorWithSummaries };
+  return { errorWithSummaries };
 };

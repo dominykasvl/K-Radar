@@ -3,8 +3,7 @@ import htmlparser2 from 'htmlparser2-without-node-native';
 import sha256 from 'crypto-js/sha256';
 import storage from '../config/storage';
 
-export const useFetchAndParse = (url, corsProxy) => {
-  const [data, setData] = useState(null);
+export const useFetchAndParse = (url, corsProxy, refreshKey, setData) => {
   const [error, setError] = useState(null);
 
   useEffect(() => {
@@ -74,7 +73,7 @@ export const useFetchAndParse = (url, corsProxy) => {
     };
 
     getData();
-  }, [url, corsProxy]);
+  }, [url, corsProxy, refreshKey]);
 
-  return { data, error };
+  return { error };
 };
