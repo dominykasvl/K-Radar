@@ -62,39 +62,18 @@ const wait = (timeout) => {
 }
 
 const App = () => {
-  const [storageCleaned, setStorageCleaned] = useState(false);
-
-  const cleanStorage = () => {
-    // Your storage cleaning logic here
-    // After cleaning storage, set storageCleaned state to true
-    setStorageCleaned(true);
-  };
-
-  const [status, requestPermission] = MediaLibrary.usePermissions();
-
-  if (status === null) {
-    requestPermission();
-  }
-
   const imageRef = useRef();
 
   const url = config.website;
   const corsProxy = config.proxyUrl;
   const summariesAPI = config.summariesAPI;
-  let data;
-  let summaries;
-  const fetchAndSummarizeData = () => {
-    const { data: fetchedData, error } = useFetchAndParse(url, corsProxy);
-    console.log('data:', fetchedData);
-    console.log('error:', error);
-    data = fetchedData;
-    const { data: fetchedSummaries, errorWithSummaries } = useFetchAndSummarize(data, summariesAPI, corsProxy);
-    console.log('summaries:', fetchedSummaries);
-    console.log('errorWithSummaries:', errorWithSummaries);
-    summaries = fetchedSummaries;
-  };
-
-  fetchAndSummarizeData();
+  
+  const { data, error } = useFetchAndParse(url, corsProxy);
+  console.log('data:', data);
+  console.log('error:', error);
+  const { data: summaries, errorWithSummaries } = useFetchAndSummarize(data, summariesAPI, corsProxy);
+  console.log('summaries:', summaries);
+  console.log('errorWithSummaries:', errorWithSummaries);
 
   const onOpenWithWebBrowser = async (url) => {
     try {
@@ -117,16 +96,7 @@ const App = () => {
     storage.clear().then(() => {
       wait(2000).then(() => setRefreshing(false));
     });
-    cleanStorage;
   }, []);
-  
-  useEffect(() => {
-    if (storageCleaned) {
-      fetchAndSummarizeData();
-      // Reset the storageCleaned state to false after fetching data
-      setStorageCleaned(false);
-    }
-  }, [storageCleaned]);
 
   return (
     <View style={{ flex: 1 }}>
