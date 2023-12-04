@@ -32,7 +32,7 @@ const Item = memo(({ item, onPress, placeholderImageSource }) => {
 }, (prevProps, nextProps) => prevProps.item === nextProps.item && prevProps.onPress === nextProps.onPress);
 
 
-export default function ImageViewer({ placeholderImageSource, data, onPress, refreshing, onRefresh }) {
+export default function ImageViewer({ placeholderImageSource, data, onPress, refreshing, onRefresh, showWebView }) {
     if (!data) {
         return (
             <View style={styles.loadingContainer}>
@@ -62,6 +62,7 @@ export default function ImageViewer({ placeholderImageSource, data, onPress, ref
                             onRefresh={onRefresh}
                         />
                     }
+                    scrollEnabled={!showWebView} // Disable scrolling when the WebView is shown
                 />
             </View>
         </View>
