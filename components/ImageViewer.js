@@ -49,9 +49,9 @@ const Item = memo(({ item, onPress, placeholderImageSource }) => {
                     )}
                 </View>
             </View>
-            <Pressable onPress={() => onPress(item.link)} style={styles.pressable}>
+            {/* <Pressable onPress={() => onPress(item.link)} style={styles.pressable}>
                 <MaterialIcons name="open-in-browser" size={32} color="white" />
-            </Pressable>
+            </Pressable> */}
         </Pressable>
     );
 }, (prevProps, nextProps) => prevProps.item === nextProps.item && prevProps.onPress === nextProps.onPress);

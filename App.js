@@ -71,7 +71,7 @@ const App = () => {
   const url = config.website;
   const corsProxy = config.proxyUrl;
   const summariesAPI = config.summariesAPI;
-  
+
   const { error } = useFetchAndParse(url, corsProxy, refreshKey, setData);
   //console.log('data:', data);
   if (error !== null) {
@@ -83,13 +83,13 @@ const App = () => {
   }
 
   const translateX = useRef(new Animated.Value(0)).current;
-const opacity = translateX.interpolate({
-  inputRange: [0, 1000],
-  outputRange: [1, 0], // Change this to adjust the fade out effect
-  extrapolate: 'clamp'
-});
+  const opacity = translateX.interpolate({
+    inputRange: [0, 1000],
+    outputRange: [1, 0], // Change this to adjust the fade out effect
+    extrapolate: 'clamp'
+  });
 
-const translateXRight = useRef(new Animated.Value(0)).current;
+  const translateXRight = useRef(new Animated.Value(0)).current;
 
   const onGestureEventRight = ({ nativeEvent }) => {
     if (nativeEvent.translationX <= 0) {
@@ -98,64 +98,64 @@ const translateXRight = useRef(new Animated.Value(0)).current;
   };
 
   // Assume `currentIndex` is a state variable that gets updated whenever the visible item changes
-const [currentIndex, setCurrentIndex] = useState(0);
+  const [currentIndex, setCurrentIndex] = useState(0);
 
-const onHandlerStateChangeRight = ({ nativeEvent }) => {
-  if (nativeEvent.state === State.END) {
-    if (nativeEvent.translationX < -100) { 
-      Animated.timing(translateXRight, {
-        toValue: -1000,
-        duration: 250,
-        useNativeDriver: true
-      }).start(() => {
-        // Get the URL of the currently visible item
-        const currentUrl = data[currentIndex].link;
-        if (currentUrl) {
-          onOpenWithWebBrowser(currentUrl); 
-        }
-        // translateXRight.setValue(0); // Remove this line
-      });
-    } else {
-      Animated.timing(translateXRight, {
-        toValue: 0,
-        duration: 250,
-        useNativeDriver: true
-      }).start();
+  const onHandlerStateChangeRight = ({ nativeEvent }) => {
+    if (nativeEvent.state === State.END) {
+      if (nativeEvent.translationX < -100) {
+        Animated.timing(translateXRight, {
+          toValue: -1000,
+          duration: 250,
+          useNativeDriver: true
+        }).start(() => {
+          // Get the URL of the currently visible item
+          const currentUrl = data[currentIndex].link;
+          if (currentUrl) {
+            onOpenWithWebBrowser(currentUrl);
+          }
+          // translateXRight.setValue(0); // Remove this line
+        });
+      } else {
+        Animated.timing(translateXRight, {
+          toValue: 0,
+          duration: 250,
+          useNativeDriver: true
+        }).start();
+      }
     }
-  }
-};
+  };
 
-const onGestureEvent = ({ nativeEvent }) => {
-  if (nativeEvent.translationX >= 0) {
-    translateX.setValue(nativeEvent.translationX);
-  }
-};
-
-const onHandlerStateChange = ({ nativeEvent }) => {
-  if (nativeEvent.state === State.END) {
-    if (nativeEvent.translationX > 100) { // Increase this value to require a larger swipe to go back
-      Animated.timing(translateX, {
-        toValue: 1000,
-        duration: 250,
-        useNativeDriver: true
-      }).start(() => {
-        setShowWebView(false);
-        setCurrentUrl(null); // Unmount the WebView
-        translateX.setValue(0); // Reset translation
-      });
-    } else {
-      // If the swipe was not far enough, animate the WebView back to its original position
-      Animated.timing(translateX, {
-        toValue: 0,
-        duration: 250,
-        useNativeDriver: true
-      }).start(() => {
-        translateX.setValue(0); // Reset translation
-      });
+  const onGestureEvent = ({ nativeEvent }) => {
+    if (nativeEvent.translationX >= 0) {
+      translateX.setValue(nativeEvent.translationX);
     }
-  }
-};
-  
+  };
+
+  const onHandlerStateChange = ({ nativeEvent }) => {
+    if (nativeEvent.state === State.END) {
+      if (nativeEvent.translationX > 100) { // Increase this value to require a larger swipe to go back
+        Animated.timing(translateX, {
+          toValue: 1000,
+          duration: 250,
+          useNativeDriver: true
+        }).start(() => {
+          setShowWebView(false);
+          setCurrentUrl(null); // Unmount the WebView
+          translateX.setValue(0); // Reset translation
+        });
+      } else {
+        // If the swipe was not far enough, animate the WebView back to its original position
+        Animated.timing(translateX, {
+          toValue: 0,
+          duration: 250,
+          useNativeDriver: true
+        }).start(() => {
+          translateX.setValue(0); // Reset translation
+        });
+      }
+    }
+  };
+
 
   const [showWebView, setShowWebView] = useState(false);
   const [currentUrl, setCurrentUrl] = useState(null);
@@ -171,7 +171,7 @@ const onHandlerStateChange = ({ nativeEvent }) => {
         console.error("Invalid URL:", url);
         return;
       }
-  
+
       setCurrentUrl(url);
       //translateX.setValue(1000); // Start off the right edge of the screen
       setShowWebView(true);
@@ -212,26 +212,26 @@ const onHandlerStateChange = ({ nativeEvent }) => {
           <View style={styles.container}>
             <View style={styles.imageContainer}>
               <View ref={imageRef} collapsable={false}>
-              <PanGestureHandler
-  onGestureEvent={onGestureEventRight}
-  onHandlerStateChange={onHandlerStateChangeRight}
->
-<Animated.View
-        style={[
-          styles.container,
-          { flex: 1, transform: [{ translateX: translateXRight }] }
-        ]}
-      >
-                <ImageViewer
-                  placeholderImageSource={PlaceholderImage}
-                  data={data}
-                  onPress={onOpenWithWebBrowser}
-                  refreshing={refreshing}
-                  onRefresh={onRefresh}
-                  showWebView={showWebView} // Pass the showWebView state
-                  setCurrentIndex={setCurrentIndex} // Pass the setCurrentIndex function
-                />
-                </Animated.View>
+                <PanGestureHandler
+                  onGestureEvent={onGestureEventRight}
+                  onHandlerStateChange={onHandlerStateChangeRight}
+                >
+                  <Animated.View
+                    style={[
+                      styles.container,
+                      { flex: 1, transform: [{ translateX: translateXRight }] }
+                    ]}
+                  >
+                    <ImageViewer
+                      placeholderImageSource={PlaceholderImage}
+                      data={data}
+                      onPress={onOpenWithWebBrowser}
+                      refreshing={refreshing}
+                      onRefresh={onRefresh}
+                      showWebView={showWebView} // Pass the showWebView state
+                      setCurrentIndex={setCurrentIndex} // Pass the setCurrentIndex function
+                    />
+                  </Animated.View>
                 </PanGestureHandler>
               </View>
             </View>
