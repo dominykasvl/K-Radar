@@ -49,7 +49,6 @@ const styles = StyleSheet.create({
   },
   imageContainer: {
     flex: 1,
-    paddingTop: 58,
   },
   image: {
     width: 520,
@@ -75,9 +74,13 @@ const App = () => {
   
   const { error } = useFetchAndParse(url, corsProxy, refreshKey, setData);
   //console.log('data:', data);
-  console.log('error:', error);
+  if (error !== null) {
+    console.log('error:', error);
+  }
   const { errorWithSummaries } = useFetchAndSummarize(data, summariesAPI, corsProxy, refreshKey, setData);
-  console.log('errorWithSummaries:', errorWithSummaries);
+  if (errorWithSummaries !== null) {
+    console.log('errorWithSummaries:', errorWithSummaries);
+  }
 
   const translateX = useRef(new Animated.Value(0)).current;
 const opacity = translateX.interpolate({

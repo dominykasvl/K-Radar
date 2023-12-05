@@ -2,11 +2,30 @@ import React, { memo, useState } from 'react';
 import { Platform, RefreshControl, StyleSheet, Image, Text, View, ActivityIndicator, Pressable, FlatList } from 'react-native';
 import moment from 'moment';
 import MaterialIcons from '@expo/vector-icons/MaterialIcons';
+import { Dimensions } from 'react-native';
+
+const screenHeight = Dimensions.get('window').height;
+const screenWidth = Dimensions.get('window').width;
+const backgroundBottomMargin = 20;
 
 const Item = memo(({ item, onPress, placeholderImageSource }) => {
     const [showSummary, setShowSummary] = useState(false);
     const imageSource = item.image ? { uri: item.image } : placeholderImageSource;
     const timestamp = moment.unix(item.timestamp).format('MMMM Do YYYY, h:mm a');
+    const [summaryHeight, setSummaryHeight] = useState(0);
+    const [titleHeight, setTitleHeight] = useState(0);
+    const [dateHeight, setDateHeight] = useState(0);
+
+    const backgroundStyle = {
+        position: 'absolute',
+        left: 0,
+        right: 0,
+        bottom: 0,
+        borderRadius: 18,
+        backgroundColor: 'rgba(0, 0, 0, 0.6)', // Semi-transparent background
+        height: showSummary ? summaryHeight + titleHeight + dateHeight + backgroundBottomMargin : titleHeight + dateHeight + backgroundBottomMargin, // Adjust this value as needed
+        width: screenWidth,
+    };
 
     return (
         <Pressable
@@ -14,15 +33,21 @@ const Item = memo(({ item, onPress, placeholderImageSource }) => {
             onPressOut={() => setShowSummary(false)}
             style={styles.imageContainer}
         >
-            <Image source={imageSource} style={styles.image} />
-            <View style={styles.textContainer}>
-                <Text style={styles.title}>{item.title}</Text>
-                <Text style={styles.timestamp}>{timestamp}</Text>
-                {showSummary && (
-                    <Text style={styles.summary}>
-                        {item.summary || 'Loading summaries...'}
-                    </Text>
-                )}
+            <Image source={imageSource} style={styles.image} resizeMode='cover' />
+            <View style={backgroundStyle} >
+                <View style={styles.textContainer}>
+                <Text style={styles.title} onLayout={(event) => setTitleHeight(event.nativeEvent.layout.height)}>
+                    {item.title}
+                </Text>
+                <Text style={styles.timestamp} onLayout={(event) => setDateHeight(event.nativeEvent.layout.height)}>
+                    {timestamp}
+                </Text>
+                    {showSummary && (
+                        <Text style={styles.summary} onLayout={(event) => setSummaryHeight(event.nativeEvent.layout.height)}>
+                            {item.summary || 'Loading summaries...'}
+                        </Text>
+                    )}
+                </View>
             </View>
             <Pressable onPress={() => onPress(item.link)} style={styles.pressable}>
                 <MaterialIcons name="open-in-browser" size={24} color="white" />
@@ -56,6 +81,7 @@ export default function ImageViewer({ placeholderImageSource, data, onPress, ref
                     data={data}
                     renderItem={({ item }) => <Item item={item} onPress={onPress} placeholderImageSource={placeholderImageSource} />}
                     keyExtractor={(item, index) => index.toString()}
+                    pagingEnabled
                     refreshControl={
                         <RefreshControl
                             refreshing={refreshing}
@@ -100,25 +126,36 @@ const styles = StyleSheet.create({
       paddingRight: 5,
   },
     imageContainer: {
+        height: screenHeight,
       position: 'relative',
-      margin: 10, // Add space between images
   },
     image: {
-        width: 320,
-        height: 440,
+        width: screenWidth,
+        height: screenHeight,
         borderRadius: 18,
     },
     textContainer: {
-      position: 'absolute',
-      left: 0,
-      right: 0,
-      bottom: 0,
-      justifyContent: 'flex-end',
-      alignItems: 'flex-start',
-      paddingLeft: 10, // Add left padding
-      backgroundColor: 'rgba(0, 0, 0, 0.3)', // Semi-transparent background
-      borderRadius: 18,
-  },
+        position: 'absolute',
+        left: 0,
+        right: 0,
+        bottom: 0,
+        justifyContent: 'flex-end',
+        alignItems: 'flex-start',
+        paddingLeft: 10, // Add left padding
+        //backgroundColor: 'rgba(0, 0, 0, 0.3)', // Semi-transparent background
+        marginBottom: backgroundBottomMargin, // Adjust this value as needed
+        width: screenWidth, // Add this line
+    },
+    background: {
+        position: 'absolute',
+        left: 0,
+        right: 0,
+        bottom: 0,
+        borderRadius: 18,
+        backgroundColor: 'rgba(0, 0, 0, 0.6)', // Semi-transparent background
+        height: 120, // Adjust this value as needed
+        width: screenWidth,
+    },
   title: {
       fontSize: 20,
       fontWeight: 'bold',
