@@ -1,4 +1,4 @@
-import React, { memo, useState } from 'react';
+import React, { memo, useState, useRef } from 'react';
 import { Platform, RefreshControl, StyleSheet, Image, Text, View, ActivityIndicator, Pressable, FlatList } from 'react-native';
 import moment from 'moment';
 import MaterialIcons from '@expo/vector-icons/MaterialIcons';
@@ -6,7 +6,7 @@ import { Dimensions } from 'react-native';
 
 const screenHeight = Dimensions.get('window').height;
 const screenWidth = Dimensions.get('window').width;
-const backgroundBottomMargin = 20;
+const backgroundBottomMargin = 40;
 
 const Item = memo(({ item, onPress, placeholderImageSource }) => {
     const [showSummary, setShowSummary] = useState(false);
@@ -50,14 +50,20 @@ const Item = memo(({ item, onPress, placeholderImageSource }) => {
                 </View>
             </View>
             <Pressable onPress={() => onPress(item.link)} style={styles.pressable}>
-                <MaterialIcons name="open-in-browser" size={24} color="white" />
+                <MaterialIcons name="open-in-browser" size={32} color="white" />
             </Pressable>
         </Pressable>
     );
 }, (prevProps, nextProps) => prevProps.item === nextProps.item && prevProps.onPress === nextProps.onPress);
 
 
-export default function ImageViewer({ placeholderImageSource, data, onPress, refreshing, onRefresh, showWebView }) {
+export default function ImageViewer({ placeholderImageSource, data, onPress, refreshing, onRefresh, showWebView, setCurrentIndex }) {
+    const onViewableItemsChanged = useRef(({ viewableItems }) => {
+        if (viewableItems.length > 0) {
+          setCurrentIndex(viewableItems[0].index);
+        }
+      }).current;
+    
     if (!data) {
         return (
             <View style={styles.loadingContainer}>
@@ -82,6 +88,10 @@ export default function ImageViewer({ placeholderImageSource, data, onPress, ref
                     renderItem={({ item }) => <Item item={item} onPress={onPress} placeholderImageSource={placeholderImageSource} />}
                     keyExtractor={(item, index) => index.toString()}
                     pagingEnabled
+                    onViewableItemsChanged={onViewableItemsChanged}
+                    viewabilityConfig={{
+                        itemVisiblePercentThreshold: 50 // Adjust this value as needed
+                    }}
                     refreshControl={
                         <RefreshControl
                             refreshing={refreshing}
@@ -121,8 +131,8 @@ const styles = StyleSheet.create({
     },
     pressable: {
       position: 'absolute',
-      bottom: 1,
-      right: 5,
+      bottom: 20,
+      right: 20,
       paddingRight: 5,
   },
     imageContainer: {

@@ -89,6 +89,42 @@ const opacity = translateX.interpolate({
   extrapolate: 'clamp'
 });
 
+const translateXRight = useRef(new Animated.Value(0)).current;
+
+  const onGestureEventRight = ({ nativeEvent }) => {
+    if (nativeEvent.translationX <= 0) {
+      translateXRight.setValue(nativeEvent.translationX);
+    }
+  };
+
+  // Assume `currentIndex` is a state variable that gets updated whenever the visible item changes
+const [currentIndex, setCurrentIndex] = useState(0);
+
+const onHandlerStateChangeRight = ({ nativeEvent }) => {
+  if (nativeEvent.state === State.END) {
+    if (nativeEvent.translationX < -100) { 
+      Animated.timing(translateXRight, {
+        toValue: -1000,
+        duration: 250,
+        useNativeDriver: true
+      }).start(() => {
+        // Get the URL of the currently visible item
+        const currentUrl = data[currentIndex].link;
+        if (currentUrl) {
+          onOpenWithWebBrowser(currentUrl); 
+        }
+        // translateXRight.setValue(0); // Remove this line
+      });
+    } else {
+      Animated.timing(translateXRight, {
+        toValue: 0,
+        duration: 250,
+        useNativeDriver: true
+      }).start();
+    }
+  }
+};
+
 const onGestureEvent = ({ nativeEvent }) => {
   if (nativeEvent.translationX >= 0) {
     translateX.setValue(nativeEvent.translationX);
@@ -113,7 +149,9 @@ const onHandlerStateChange = ({ nativeEvent }) => {
         toValue: 0,
         duration: 250,
         useNativeDriver: true
-      }).start();
+      }).start(() => {
+        translateX.setValue(0); // Reset translation
+      });
     }
   }
 };
@@ -135,13 +173,13 @@ const onHandlerStateChange = ({ nativeEvent }) => {
       }
   
       setCurrentUrl(url);
-      translateX.setValue(1000); // Start off the right edge of the screen
+      //translateX.setValue(1000); // Start off the right edge of the screen
       setShowWebView(true);
-      Animated.timing(translateX, {
-        toValue: 0, // Slide into place
-        duration: 250,
-        useNativeDriver: true
-      }).start();
+      // Animated.timing(translateX, {
+      //   toValue: 0, // Slide into place
+      //   duration: 250,
+      //   useNativeDriver: true
+      // }).start();
     } catch (error) {
       console.error("Failed to open browser:", error);
     }
@@ -174,6 +212,16 @@ const onHandlerStateChange = ({ nativeEvent }) => {
           <View style={styles.container}>
             <View style={styles.imageContainer}>
               <View ref={imageRef} collapsable={false}>
+              <PanGestureHandler
+  onGestureEvent={onGestureEventRight}
+  onHandlerStateChange={onHandlerStateChangeRight}
+>
+<Animated.View
+        style={[
+          styles.container,
+          { flex: 1, transform: [{ translateX: translateXRight }] }
+        ]}
+      >
                 <ImageViewer
                   placeholderImageSource={PlaceholderImage}
                   data={data}
@@ -181,7 +229,10 @@ const onHandlerStateChange = ({ nativeEvent }) => {
                   refreshing={refreshing}
                   onRefresh={onRefresh}
                   showWebView={showWebView} // Pass the showWebView state
+                  setCurrentIndex={setCurrentIndex} // Pass the setCurrentIndex function
                 />
+                </Animated.View>
+                </PanGestureHandler>
               </View>
             </View>
             <StatusBar style="light" />
@@ -217,6 +268,7 @@ const onHandlerStateChange = ({ nativeEvent }) => {
                 const { nativeEvent } = syntheticEvent;
                 console.warn('WebView error: ', nativeEvent);
               }}
+              onLoadEnd={() => translateXRight.setValue(0)}
             />
           </Animated.View>
         </PanGestureHandler>
