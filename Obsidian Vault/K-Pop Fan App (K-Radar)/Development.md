@@ -7,10 +7,13 @@
 	- [ ] Option 3: Update rules from self hosted server
 - [x] Code: Fix Fetching after storage clearing
 - [ ] UI: Infinite scrolling
-- [ ] UX: Make Tik-tok like content experience
+- [x] UX: Make Tik-tok like content experience
 - [x] UX\UI: Embed pages instead of opening in Native Browsers
 	- [ ] Security considerations - apply "disable everything but" logic.
 	- [x] Delete state on each link press - delete WebView state, web cookies/cache etc
 - [ ] Code: Add ability to switch to native browser
 - [x] UX: Swipe right to open a link
 - [ ] Code: preload a link for faster link traversal
+- [ ] Code: Improve data hashing security methods
+- [ ] Bug: Swiping back out of the webview when it hasnt finished loading yet results in empty render
+- [ ] Code: Filter cards by artist, group, label

@@ -7,7 +7,7 @@ export const useFetchAndParse = (url, corsProxy, refreshKey, setData) => {
   const [error, setError] = useState(null);
 
   useEffect(() => {
-    const fetchUrl = corsProxy + encodeURIComponent(url);
+    const fetchUrl = url;
 
     const getData = async () => {
       try {
@@ -22,9 +22,9 @@ export const useFetchAndParse = (url, corsProxy, refreshKey, setData) => {
         }
 
         fetch(fetchUrl)
-          .then(response => response.json())
+          .then(response => response.text())
           .then(content => {
-            const html = content.contents;
+            const html = content;
             const handler = new htmlparser2.DomHandler(async (error, dom) => {
               if (error) {
                 setError('An error occurred while parsing HTML.');

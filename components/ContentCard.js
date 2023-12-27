@@ -57,7 +57,7 @@ const Item = memo(({ item, onPress, placeholderImageSource }) => {
 }, (prevProps, nextProps) => prevProps.item === nextProps.item && prevProps.onPress === nextProps.onPress);
 
 
-export default function ImageViewer({ placeholderImageSource, data, onPress, refreshing, onRefresh, showWebView, setCurrentIndex }) {
+export default function ContentCard({ placeholderImageSource, data, onPress, refreshing, onRefresh, showWebView, setCurrentIndex }) {
     const onViewableItemsChanged = useRef(({ viewableItems }) => {
         if (viewableItems.length > 0) {
           setCurrentIndex(viewableItems[0].index);

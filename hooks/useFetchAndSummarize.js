@@ -51,8 +51,8 @@ useEffect(() => {
 
       const updatedData = [...data]; // Create a copy of data
       for (let i = 0; i < updatedData.length; i++) {
-          const response = await axios.get(corsProxy + encodeURIComponent(data[i].link));
-          const $ = cheerio.load(response.data.contents);
+          const response = await axios.get(data[i].link);
+          const $ = cheerio.load(response.data);
           const articleText = $('#article-content').find('p').map((index, element) => $(element).text().trim()).get().join(' ');
           //const summaryResponse = await axios.post(apiUrl, { text: articleText });
           const summaryResponse = summarizeText(articleText);
