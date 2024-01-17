@@ -97,7 +97,7 @@ const App = () => {
             <WebView
               source={{ uri: currentUrl }}
               incognito={true}
-              style={{ marginTop: 20 }}
+              style={{ marginTop: 20, backgroundColor: 'transparent' }}
               onShouldStartLoadWithRequest={request => {
                 // Only allow navigating within this website
                 return request.url.startsWith("https://");
