@@ -15,7 +15,7 @@
 	- WebView now sits loaded in the background and hidden with lower zIndex than main View. While WebView is loading the next, it shows white background with and indicator.
 - [ ] Improve data hashing security methods
 - [ ] Filter cards by artist, group, label
-- [ ] Use articles image for higher resolution thumbnails
+- [x] Use articles image for higher resolution thumbnails
 - [ ] Upgrade the Gesture Handler to use new APIs
 
 	UI/UX:
