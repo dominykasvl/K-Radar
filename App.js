@@ -35,10 +35,12 @@ const wait = (timeout) => {
 const App = () => {
   const [refreshKey, setRefreshKey] = useState(0);
   const [data, setData] = useState(null);
+  const [loadingProgress, setLoadingProgress] = useState(0);
 
   const url = config.website;
   const corsProxy = config.proxyUrl;
   const summariesAPI = config.summariesAPI;
+  const domain = config.domain;
 
   const { error } = useFetchAndParse(url, corsProxy, refreshKey, setData);
   //console.log('data:', data);
@@ -82,6 +84,7 @@ const App = () => {
           currentIndex={currentIndex} // Pass the currentIndex state
           data={data} // Pass the data state
           translateXRight={translateXRight} // Pass the translateXRight ref
+          loadingProgress={loadingProgress} // Pass the loadingProgress state
           contentCard={
             <ContentCard
               placeholderImageSource={PlaceholderImage}
@@ -95,7 +98,7 @@ const App = () => {
           }
           webView={
             <WebView
-              source={{ uri: currentUrl }}
+              source={{ uri: currentUrl || domain }}
               incognito={true}
               style={{ marginTop: 20, backgroundColor: 'transparent' }}
               onShouldStartLoadWithRequest={request => {
@@ -107,6 +110,9 @@ const App = () => {
                 console.warn('WebView error: ', nativeEvent);
               }}
               onLoadEnd={() => translateXRight.setValue(0)}
+              onLoadProgress={({ nativeEvent }) => {
+                setLoadingProgress(nativeEvent.progress);
+              }}
             />
           }
         >
