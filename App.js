@@ -68,7 +68,6 @@ const App = () => {
       wait(2000).then(() => {
         setRefreshing(false);
         setRefreshKey(refreshKey + 1);
-        setData(null); // Clear data
       });
     });
   }, [refreshKey]);

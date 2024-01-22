@@ -63,15 +63,6 @@ export default function ContentCard({ placeholderImageSource, data, onPress, ref
           setCurrentIndex(viewableItems[0].index);
         }
       }).current;
-    
-    if (!data) {
-        return (
-            <View style={styles.loadingContainer}>
-                <ActivityIndicator size="large" color="#0000ff" />
-                <Text color="white">Loading...</Text>
-            </View>
-        );
-    }
 
     return (
         <View style={styles.parentContainer}>
@@ -92,12 +83,8 @@ export default function ContentCard({ placeholderImageSource, data, onPress, ref
                     viewabilityConfig={{
                         itemVisiblePercentThreshold: 50 // Adjust this value as needed
                     }}
-                    refreshControl={
-                        <RefreshControl
-                            refreshing={refreshing}
-                            onRefresh={onRefresh}
-                        />
-                    }
+                    refreshing={refreshing}
+                    onRefresh={onRefresh}
                     scrollEnabled={!showWebView} // Disable scrolling when the WebView is shown
                 />
             </View>
