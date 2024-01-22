@@ -18,7 +18,7 @@ export default function GestureHandlers({ showWebView, setShowWebView, onOpenWit
         console.log('Left swipe - state:', nativeEvent.state);
         if (nativeEvent.state === State.ACTIVE) {
             console.log('Left swipe BEGAN - translationX:', nativeEvent.translationX);
-            if (nativeEvent.translationX < -5) {
+            if (nativeEvent.translationX < 0) {
                 console.log('Left swipe: Loading URL in WebView', nativeEvent.translationX);
                 const currentUrl = data[currentIndex].link;
                 console.log('currentUrl:', currentUrl);

@@ -28,5 +28,6 @@
 
 	Bugs:
 - [x] Bug: Swiping back out of the webview when it hasnt finished loading yet results in empty render (?) - sometimes
-- [ ] Swiping slowly results in link not being set
+- [x] Swiping slowly results in link not being set
 - [x] If the link is loaded and user tries to access it again, the "setLoadingProgress(true);" line prevents the app to show the webview
+- [ ] Making a slow gesture to open a link and holding the view in motion, makes it do a quick reset in X value.
