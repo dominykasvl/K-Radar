@@ -42,9 +42,13 @@ export const useFetchAndSummarize = (data, apiUrl, corsProxy, refreshKey, setDat
       try {
         const storedSummaries = await storage.getItem('summaries');
         const storedHash = await storage.getItem('summariesHash');
-        if (storedSummaries && storedHash && storedHash === sha256(storedSummaries).toString()) {
+        const storedImages = await storage.getItem('images');
+        const storedImagesHash = await storage.getItem('imagesHash');
+        if (storedSummaries && storedHash && storedHash === sha256(storedSummaries).toString() && storedImages && storedImagesHash && storedImagesHash === sha256(storedImages).toString()) {
           const summaries = JSON.parse(storedSummaries);
-          const updatedData = data.map((item, index) => ({ ...item, summary: summaries[index] }));
+          const images = JSON.parse(storedImages);
+          const updatedData = data.map((item, index) => ({ ...item, summary: summaries[index], image: images[index] }));
+
           setData(updatedData);
           return;
         }
@@ -70,6 +74,8 @@ export const useFetchAndSummarize = (data, apiUrl, corsProxy, refreshKey, setDat
         setData(updatedData);
         await storage.setItem('summaries', JSON.stringify(updatedData.map(item => item.summary)));
         await storage.setItem('summariesHash', sha256(JSON.stringify(updatedData.map(item => item.summary))).toString());
+        await storage.setItem('images', JSON.stringify(updatedData.map(item => item.image)));
+        await storage.setItem('imagesHash', sha256(JSON.stringify(updatedData.map(item => item.image))).toString());
       } catch (err) {
         setErrorWithSummaries(err);
       }
