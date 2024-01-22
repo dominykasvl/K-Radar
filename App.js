@@ -35,7 +35,7 @@ const wait = (timeout) => {
 const App = () => {
   const [refreshKey, setRefreshKey] = useState(0);
   const [data, setData] = useState(null);
-  const [loadingProgress, setLoadingProgress] = useState(0);
+  const [loadingProgress, setLoadingProgress] = useState(false);
 
   const url = config.website;
   const corsProxy = config.proxyUrl;
@@ -84,6 +84,7 @@ const App = () => {
           data={data} // Pass the data state
           translateXRight={translateXRight} // Pass the translateXRight ref
           loadingProgress={loadingProgress} // Pass the loadingProgress state
+          setLoadingProgress={setLoadingProgress} // Pass the setLoadingProgress function
           contentCard={
             <ContentCard
               placeholderImageSource={PlaceholderImage}
@@ -109,8 +110,9 @@ const App = () => {
                 console.warn('WebView error: ', nativeEvent);
               }}
               onLoadEnd={() => translateXRight.setValue(0)}
-              onLoadProgress={({ nativeEvent }) => {
-                setLoadingProgress(nativeEvent.progress);
+              onNavigationStateChange={(navState) => {
+                setLoadingProgress(navState.loading);
+                console.log('navState.loading:', navState.loading);
               }}
             />
           }

@@ -3,73 +3,78 @@ import { Animated, View, Text, ActivityIndicator } from 'react-native';
 import { PanGestureHandler, State } from 'react-native-gesture-handler';
 import { StyleSheet } from 'react-native';
 
-export default function GestureHandlers({ showWebView, setShowWebView, onOpenWithWebBrowser, setCurrentUrl, currentIndex, data, translateXRight, loadingProgress, contentCard, webView }) {
+export default function GestureHandlers({ showWebView, setShowWebView, onOpenWithWebBrowser, setCurrentUrl, currentIndex, data, translateXRight, loadingProgress, setLoadingProgress, contentCard, webView }) {
     const translateX = useRef(new Animated.Value(0)).current;
-    const [opaque, setOpaque] = useState(false);
 
-    const [zIndex, setZIndex] = useState(-1); // Add this line
+    const [zIndex, setZIndex] = useState(-1);
 
-    const onGestureEventRight = ({ nativeEvent }) => {
+    const onGestureEventLeft = ({ nativeEvent }) => {
         if (nativeEvent.translationX <= 0) {
             translateXRight.setValue(nativeEvent.translationX);
         }
     };
 
-    const onHandlerStateChangeRight = ({ nativeEvent }) => {
-        console.log('onHandlerStateChangeRight - state:', nativeEvent.state);
+    const onHandlerStateChangeLeft = ({ nativeEvent }) => {
+        console.log('Left swipe - state:', nativeEvent.state);
         if (nativeEvent.state === State.ACTIVE) {
-            console.log('onHandlerStateChangeRight BEGAN - translationX:', nativeEvent.translationX);
+            console.log('Left swipe BEGAN - translationX:', nativeEvent.translationX);
             if (nativeEvent.translationX < -5) {
-                console.log('Passed State "BEGAN" if clause!', nativeEvent.translationX);
+                console.log('Left swipe: Loading URL in WebView', nativeEvent.translationX);
                 const currentUrl = data[currentIndex].link;
                 console.log('currentUrl:', currentUrl);
                 if (currentUrl) {
+                    setLoadingProgress(true);
                     onOpenWithWebBrowser(currentUrl, setCurrentUrl, setShowWebView);
                 }
             }
         }
         if (nativeEvent.state === State.END) {
-            console.log('onHandlerStateChangeRight - translationX:', nativeEvent.translationX);
+            console.log('Left swipe - translationX:', nativeEvent.translationX);
             if (nativeEvent.translationX < -100) {
-                console.log('Passed State "END" if clause state!', nativeEvent.translationX);
+                console.log('Left swipe BEGAN - translationX', nativeEvent.translationX);
                 Animated.timing(translateXRight, {
                     toValue: -1000,
                     duration: 250,
                     useNativeDriver: true
                 }).start(() => {
-                    console.log('Made it to the end of the animation for the right swipe!')
-                    // Get the URL of the currently visible item
+                    console.log('Left swipe: Made it to the end of the animation for the left swipe!')
+                    setShowWebView(true);
                     setZIndex(1000);
-                    translateXRight.setValue(0); // Remove this line
+                    translateXRight.setValue(0);
                 });
             } else {
-                console.log('Passed State "END" else clause state!', nativeEvent.translationX);
                 Animated.timing(translateXRight, {
                     toValue: 0,
                     duration: 250,
                     useNativeDriver: true
-                }).start();
+                }).start(() => {
+                    console.log('Left swipe: swipe wasn\'t far enough to trigger web view!', nativeEvent.translationX);
+                    setShowWebView(false);
+                    setZIndex(-1);
+                    translateXRight.setValue(0);
+                });
             }
         }
     };
 
-    const onGestureEvent = ({ nativeEvent }) => {
+    const onGestureEventRight = ({ nativeEvent }) => {
         if (nativeEvent.translationX >= 0) {
             translateX.setValue(nativeEvent.translationX);
         }
     };
 
-    const onHandlerStateChange = ({ nativeEvent }) => {
-        console.log('onHandlerStateChange - state:', nativeEvent.state);
+    const onHandlerStateChangeRight = ({ nativeEvent }) => {
+        console.log('Right swipe - state:', nativeEvent.state);
         if (nativeEvent.state === State.END) {
+            console.log('Right swipe - translationX:', nativeEvent.translationX);
             if (nativeEvent.translationX > 100) {
                 Animated.timing(translateX, {
                     toValue: 1000,
                     duration: 250,
                     useNativeDriver: true
                 }).start(() => {
+                    console.log('Right swipe: Made it to the end of the animation for the right swipe!')
                     setShowWebView(false);
-                    setCurrentUrl(null);
                     translateX.setValue(0);
                     setZIndex(-1); // Add this line
                 });
@@ -79,6 +84,8 @@ export default function GestureHandlers({ showWebView, setShowWebView, onOpenWit
                     duration: 250,
                     useNativeDriver: true
                 }).start(() => {
+                    console.log('Right swipe: swipe wasn\'t far enough to the right to trigger the animation!')
+                    setShowWebView(true);
                     translateX.setValue(0);
                     setZIndex(1000); // Add this line
                 });
@@ -89,8 +96,8 @@ export default function GestureHandlers({ showWebView, setShowWebView, onOpenWit
     return (
         <View style={styles.container}>
             <PanGestureHandler
-                onGestureEvent={onGestureEventRight}
-                onHandlerStateChange={onHandlerStateChangeRight}
+                onGestureEvent={onGestureEventLeft}
+                onHandlerStateChange={onHandlerStateChangeLeft}
             >
                 <Animated.View
                     style={[
@@ -98,12 +105,12 @@ export default function GestureHandlers({ showWebView, setShowWebView, onOpenWit
                         { flex: 1, transform: [{ translateX: translateXRight }] }
                     ]}
                 >
-                    {contentCard}
+                    {contentCard ? contentCard : <View><Text>Failed to load content. Try to refresh.</Text></View>}
                 </Animated.View>
             </PanGestureHandler>
             <PanGestureHandler
-                onGestureEvent={onGestureEvent}
-                onHandlerStateChange={onHandlerStateChange}
+                onGestureEvent={onGestureEventRight}
+                onHandlerStateChange={onHandlerStateChangeRight}
                 enabled={showWebView}
             >
                 <Animated.View
@@ -119,8 +126,7 @@ export default function GestureHandlers({ showWebView, setShowWebView, onOpenWit
                         pointerEvents: showWebView ? 'auto' : 'none'
                     }}
                 >
-                    {webView}
-                    {loadingProgress < 1 && (
+                    {loadingProgress && (
                         <View style={{
                             position: 'absolute',
                             justifyContent: 'center',
@@ -129,6 +135,7 @@ export default function GestureHandlers({ showWebView, setShowWebView, onOpenWit
                             bottom: 0,
                             left: 0,
                             right: 0,
+                            zIndex: 2000,
                             backgroundColor: 'rgba(255, 255, 255, 1)' // Semi-transparent grey background
                         }}>
                             <ActivityIndicator
@@ -137,6 +144,7 @@ export default function GestureHandlers({ showWebView, setShowWebView, onOpenWit
                             />
                         </View>
                     )}
+                    {webView ? webView : <View><Text>Failed to load content. Try to refresh.</Text></View>}
                 </Animated.View>
             </PanGestureHandler>
         </View>

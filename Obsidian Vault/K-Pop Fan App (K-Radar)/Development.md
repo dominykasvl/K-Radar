@@ -16,6 +16,7 @@
 - [ ] Improve data hashing security methods
 - [ ] Filter cards by artist, group, label
 - [ ] Use articles image for higher resolution thumbnails
+- [ ] Upgrade the Gesture Handler to use new APIs
 
 	UI/UX:
 - [ ] Infinite scrolling
@@ -26,4 +27,6 @@
 	- [x] Swipe right to open a link
 
 	Bugs:
-- [ ] Bug: Swiping back out of the webview when it hasnt finished loading yet results in empty render (?) - sometimes
+- [x] Bug: Swiping back out of the webview when it hasnt finished loading yet results in empty render (?) - sometimes
+- [ ] Swiping slowly results in link not being set
+- [ ] If the link is loaded and user tries to access it again, the "setLoadingProgress(true);" line prevents the app to show the webview
