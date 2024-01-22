@@ -3,7 +3,7 @@ import { Animated, View, Text, ActivityIndicator } from 'react-native';
 import { PanGestureHandler, State } from 'react-native-gesture-handler';
 import { StyleSheet } from 'react-native';
 
-export default function GestureHandlers({ showWebView, setShowWebView, onOpenWithWebBrowser, setCurrentUrl, currentIndex, data, translateXRight, loadingProgress, setLoadingProgress, contentCard, webView }) {
+export default function GestureHandlers({ showWebView, setShowWebView, onOpenWithWebBrowser, setCurrentUrl, currentIndex, data, translateXRight, loadingProgress, setLoadingProgress, currentNavUri, contentCard, webView }) {
     const translateX = useRef(new Animated.Value(0)).current;
 
     const [zIndex, setZIndex] = useState(-1);
@@ -22,7 +22,7 @@ export default function GestureHandlers({ showWebView, setShowWebView, onOpenWit
                 console.log('Left swipe: Loading URL in WebView', nativeEvent.translationX);
                 const currentUrl = data[currentIndex].link;
                 console.log('currentUrl:', currentUrl);
-                if (currentUrl) {
+                if (currentUrl && currentUrl !== currentNavUri) {
                     setLoadingProgress(true);
                     onOpenWithWebBrowser(currentUrl, setCurrentUrl, setShowWebView);
                 }

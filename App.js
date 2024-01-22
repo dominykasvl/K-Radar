@@ -36,6 +36,7 @@ const App = () => {
   const [refreshKey, setRefreshKey] = useState(0);
   const [data, setData] = useState(null);
   const [loadingProgress, setLoadingProgress] = useState(false);
+  const [currentNavUri, setCurrentNavUri] = useState(null);
 
   const url = config.website;
   const corsProxy = config.proxyUrl;
@@ -85,6 +86,7 @@ const App = () => {
           translateXRight={translateXRight} // Pass the translateXRight ref
           loadingProgress={loadingProgress} // Pass the loadingProgress state
           setLoadingProgress={setLoadingProgress} // Pass the setLoadingProgress function
+          currentNavUri={currentNavUri} // Pass the currentNavUri state
           contentCard={
             <ContentCard
               placeholderImageSource={PlaceholderImage}
@@ -111,6 +113,7 @@ const App = () => {
               }}
               onLoadEnd={() => translateXRight.setValue(0)}
               onNavigationStateChange={(navState) => {
+                setCurrentNavUri(navState.url);
                 setLoadingProgress(navState.loading);
                 console.log('navState.loading:', navState.loading);
               }}
