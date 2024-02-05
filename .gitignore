@@ -39,4 +39,4 @@ yarn-error.*
 *.tsbuildinfo
 
 # local server
-server.js
+/server.js
