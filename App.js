@@ -100,7 +100,7 @@ const App = () => {
           }
           webView={
             <WebView
-              source={{ uri: currentUrl || domain }}
+              source={{ uri: currentUrl }}
               incognito={true}
               style={{ marginTop: 20, backgroundColor: 'transparent' }}
               onShouldStartLoadWithRequest={request => {

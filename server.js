@@ -1,7 +1,7 @@
 const express = require('express');
 const cors = require('cors');
 const axios = require('axios');
-const https = require('https');
+const http = require('http');
 const fs = require('fs');
 const app = express();
 const port = 3000;
@@ -43,12 +43,6 @@ app.post('/summarize', async (req, res) => {
   }
 });
 
-// SSL options
-const options = {
-  key: fs.readFileSync('./server.key'),
-  cert: fs.readFileSync('./server.crt')
-};
-
-https.createServer(options, app).listen(port, () => {
-  console.log(`Server running at https://localhost:${port}`);
+http.createServer(options, app).listen(port, () => {
+  console.log(`Server running at http://localhost:${port}`);
 });

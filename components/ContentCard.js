@@ -6,7 +6,7 @@ import { Dimensions } from 'react-native';
 
 const screenHeight = Dimensions.get('window').height;
 const screenWidth = Dimensions.get('window').width;
-const backgroundBottomMargin = 40;
+const backgroundBottomMargin = 50;
 
 const Item = memo(({ item, onPress, placeholderImageSource }) => {
     const [showSummary, setShowSummary] = useState(false);
@@ -36,7 +36,7 @@ const Item = memo(({ item, onPress, placeholderImageSource }) => {
             <Image source={imageSource} style={styles.image} resizeMode='cover' />
             <View style={backgroundStyle} >
                 <View style={styles.textContainer}>
-                <Text style={styles.title} onLayout={(event) => setTitleHeight(event.nativeEvent.layout.height)}>
+                <Text style={styles.title} onLayout={(event) => setTitleHeight(event.nativeEvent.layout.height + 5)}>
                     {item.title}
                 </Text>
                 <Text style={styles.timestamp} onLayout={(event) => setDateHeight(event.nativeEvent.layout.height)}>
