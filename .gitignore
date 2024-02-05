@@ -40,3 +40,4 @@ yarn-error.*
 
 # local server
 /server.js
+/AES
