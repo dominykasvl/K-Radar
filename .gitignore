@@ -37,7 +37,3 @@ yarn-error.*
 
 # typescript
 *.tsbuildinfo
-
-# local server
-/server.js
-/AES

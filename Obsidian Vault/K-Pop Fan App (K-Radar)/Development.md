@@ -9,9 +9,10 @@
 	- [ ] Option 1: on device dynamic rules
 	- [ ] Option 2: on device machine learning?
 	- [ ] Option 3: Update rules from self hosted server
+	- [ ] Option 4: Use generative AI to parse content into usable json by the app
 - [x] Fix Fetching after storage clearing
 - [x] preload a link for faster link traversal
-	- WebView now sits loaded in the background and hidden with lower zIndex than main View. While WebView is loading the next, it shows white background with and indicator.
+	- WebView now sits loaded in the background and hidden with lower zIndex than main View. While WebView is loading the next, it shows white background with an indicator.
 - [ ] Improve data hashing security methods
 - [ ] Filter cards by artist, group, label
 - [x] Use articles image for higher resolution thumbnails
