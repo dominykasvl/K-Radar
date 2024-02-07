@@ -1,6 +1,6 @@
 {
   "website": "https://www.allkpop.com",
   "proxyUrl": "https://192.168.8.121:3000/proxy?url=",
-  "summariesAPI": "https://3p9hw6-3000.csb.app/summarize",
+  "summariesAPI": "https://3p9hw6-3000.csb.app/summarise/v1/textrank",
   "domain": "https://www.allkpop.com"
 }
