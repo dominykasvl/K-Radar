@@ -84,11 +84,13 @@ export const useFetchAndSummarize = (
             .map((index, element) => $(element).text().trim())
             .get()
             .join(" ");
-          const summaryResponse = await axios.post(apiUrl, {
+          const summaryResponseAPI = await axios.post(apiUrl, {
             text: articleText,
           });
+          const summaryResponse = summaryResponseAPI.data.summary;
           //const summaryResponse = summarizeText(articleText);
           //updatedData.push(summaryResponse.data.summary);
+          console.log("summaryResponse:", summaryResponse);
 
           const articleThumbnail = $("#article-content")
             .find("img")
