@@ -123,10 +123,9 @@ async function startServer(apikey) {
       const text = req.body.text;
       let Summarizer = new SummarizerManager(text, 2);
       let summaryText = Summarizer.getSummaryByRank().then((summary_object) => {
-        return summary_object.summary;
+        console.log(summary_object.summary);
+        res.json({ summary: summary_object.summary });
       });
-      console.log("Summary: " + summaryText);
-      res.json({ summary: summaryText });
     } catch (error) {
       console.error(error);
       res

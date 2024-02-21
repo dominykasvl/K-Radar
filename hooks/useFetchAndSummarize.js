@@ -15,6 +15,7 @@ export const useFetchAndSummarize = (
   const [errorWithSummaries, setErrorWithSummaries] = useState(null);
 
   function summarizeText(text) {
+    console.warn("Using on device text summarizer");
     // Split the text into sentences
     let sentences = text.split(". ");
 
@@ -84,11 +85,11 @@ export const useFetchAndSummarize = (
             .map((index, element) => $(element).text().trim())
             .get()
             .join(" ");
-          const summaryResponseAPI = await axios.post(apiUrl, {
-            text: articleText,
-          });
-          const summaryResponse = summaryResponseAPI.data.summary;
-          //const summaryResponse = summarizeText(articleText);
+          // const summaryResponseAPI = await axios.post(apiUrl, {
+          //   text: articleText,
+          // });
+          //const summaryResponse = summaryResponseAPI.data.summary;
+          const summaryResponse = summarizeText(articleText);
           //updatedData.push(summaryResponse.data.summary);
           console.log("summaryResponse:", summaryResponse);
 
@@ -102,7 +103,9 @@ export const useFetchAndSummarize = (
             .get()[0];
           console.log("articleThumbnail:", articleThumbnail);
 
-          updatedData[i].summary = summaryResponse;
+          if (typeof summaryResponse === "string") {
+            updatedData[i].summary = summaryResponse;
+          }
           updatedData[i].image =
             articleThumbnail !== undefined
               ? url + articleThumbnail
