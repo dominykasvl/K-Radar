@@ -3,6 +3,7 @@ import axios from "axios";
 import cheerio from "cheerio";
 import sha256 from "crypto-js/sha256";
 import storage from "../config/storage";
+import { summary } from "../summarizer/driver";
 
 export const useFetchAndSummarize = (
   data,
@@ -13,6 +14,11 @@ export const useFetchAndSummarize = (
   url,
 ) => {
   const [errorWithSummaries, setErrorWithSummaries] = useState(null);
+
+  function summarizeWithTextRan(text) {
+    console.warn("Using TextRan text summarizer");
+    return summary(text);
+  }
 
   function summarizeText(text) {
     console.warn("Using on device text summarizer");
@@ -88,8 +94,9 @@ export const useFetchAndSummarize = (
           // const summaryResponseAPI = await axios.post(apiUrl, {
           //   text: articleText,
           // });
-          //const summaryResponse = summaryResponseAPI.data.summary;
-          const summaryResponse = summarizeText(articleText);
+          //const summaryResponse = summaryResponseAPI.data.summary; //use API
+          const summaryResponse = summarizeText(articleText); //use on device summarizer
+          //const summaryResponse = summarizeWithTextRan(articleText); //use text rank summarizer
           //updatedData.push(summaryResponse.data.summary);
           console.log("summaryResponse:", summaryResponse);
 
