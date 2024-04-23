@@ -33,7 +33,10 @@
     },
     "node kserve.js": {
       "name": "K-Serve w/o key",
-      "command": "node kserve.js"
+      "command": "node kserve.js",
+      "preview": {
+        "port": 3000
+      }
     },
     "node kserve.js --load-key": {
       "name": "K-Serve w key",
