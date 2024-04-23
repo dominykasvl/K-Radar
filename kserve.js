@@ -101,7 +101,7 @@ async function startServer(apikey) {
   app.get("/topStories", async (req, res) => {
     try {
       const response = await useFetchAndParse();
-      console.log(response);
+      if (response) console.log("Got defined response. Sending...");
       res.json(response);
     } catch (error) {
       console.error(error);
