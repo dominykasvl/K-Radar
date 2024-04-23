@@ -26,7 +26,10 @@
     },
     "web": {
       "name": "web",
-      "command": "npm run web"
+      "command": "npm run web",
+      "preview": {
+        "port": 19006
+      }
     },
     "node kserve.js": {
       "name": "K-Serve w/o key",
