@@ -7,13 +7,12 @@ const app = express();
 const port = 3000;
 
 const SummarizerManager = require("node-summarizer").SummarizerManager;
+const useFetchAndParse = require("./K-Serve-functions/News.js");
 
 ////////////////////////
 
 const crypto = require("crypto");
 const readline = require("readline");
-
-const OpenAI = require("openai");
 
 function decrypt(encryptedText, secretKey, iv) {
   let hash = crypto.createHash("sha256");
@@ -70,10 +69,6 @@ if (args.includes("--load-key")) {
 async function startServer(apikey) {
   console.clear();
 
-  const openai = new OpenAI({
-    apiKey: apikey, // Assign decrypted api key
-  });
-
   async function getSummary(text) {
     const chatCompletion = await openai.chat.completions.create({
       messages: [
@@ -101,6 +96,19 @@ async function startServer(apikey) {
     });
     console.log(`[${timestamp}] New ${req.method} request to ${req.path}`);
     next();
+  });
+
+  app.get("/topStories", async (req, res) => {
+    try {
+      const response = await useFetchAndParse();
+      console.log(response);
+      res.json(response);
+    } catch (error) {
+      console.error(error);
+      res
+        .status(500)
+        .json({ error: "An error occurred while fetching the top stories" });
+    }
   });
 
   app.post("/summarise/v1/frequency", async (req, res) => {
