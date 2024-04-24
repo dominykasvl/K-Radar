@@ -48,17 +48,17 @@ const App = () => {
   if (error !== null) {
     console.log("error:", error);
   }
-  const { errorWithSummaries } = useFetchAndSummarize(
-    data,
-    summariesAPI,
-    corsProxy,
-    refreshKey,
-    setData,
-    url,
-  );
-  if (errorWithSummaries !== null) {
-    console.log("errorWithSummaries:", errorWithSummaries);
-  }
+  // const { errorWithSummaries } = useFetchAndSummarize(
+  //   data,
+  //   summariesAPI,
+  //   corsProxy,
+  //   refreshKey,
+  //   setData,
+  //   url,
+  // );
+  // if (errorWithSummaries !== null) {
+  //   console.log("errorWithSummaries:", errorWithSummaries);
+  // }
 
   const [showWebView, setShowWebView] = useState(false);
   const [currentUrl, setCurrentUrl] = useState(null);

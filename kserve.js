@@ -108,7 +108,16 @@ async function startServer(apikey) {
           "Got defined data response. Saving to temporary memory. Sending...",
         );
         data = response;
-        res.json(data);
+        if (data) {
+          const responseWithSummaries = await useFetchAndSummarize(data);
+          if (responseWithSummaries) {
+            console.log(
+              "Got defined summary response. Saving to temporary memory. Sending...",
+            );
+            data = responseWithSummaries;
+            res.json(data);
+          } else throw new Error("No data found");
+        } else throw new Error("No data found");
       } else throw new Error("No data found");
     } catch (error) {
       console.error(error);
@@ -120,16 +129,6 @@ async function startServer(apikey) {
 
   app.get("/topStoriesSummaries", async (req, res) => {
     try {
-      if (data) {
-        const response = await useFetchAndSummarize(data);
-        if (response) {
-          console.log(
-            "Got defined summary response. Saving to temporary memory. Sending...",
-          );
-          data = response;
-          res.json(response);
-        } else throw new Error("No data found");
-      } else throw new Error("No data found");
     } catch (error) {
       console.error(error);
       res.status(500).json({

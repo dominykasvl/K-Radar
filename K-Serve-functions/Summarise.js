@@ -8,7 +8,6 @@ function summarizeWithTextRan(text) {
 }
 
 function summarizeText(text) {
-  console.warn("Using text summarizer");
   // Split the text into sentences
   let sentences = text.split(". ");
 
@@ -44,6 +43,7 @@ async function useFetchAndSummarize(data) {
   if (!data || (data.length > 0 && data[0].summary)) return;
 
   const updatedData = [...data]; // Create a copy of data
+  const url = "https://www.allkpop.com";
 
   try {
     console.log("Fetching summaries and higher def thumbnails...");
@@ -57,7 +57,7 @@ async function useFetchAndSummarize(data) {
           .get()
           .join(" ");
         const summaryResponse = summarizeText(articleText);
-        console.log("summaryResponse:", summaryResponse);
+        //console.log("summaryResponse:", summaryResponse);
 
         const articleThumbnail = $("#article-content")
           .find("img")
@@ -67,7 +67,7 @@ async function useFetchAndSummarize(data) {
           })
           .map((index, element) => $(element).attr("src"))
           .get()[0];
-        console.log("articleThumbnail:", articleThumbnail);
+        //console.log("articleThumbnail:", articleThumbnail);
 
         if (typeof summaryResponse === "string") {
           updatedData[i].summary = summaryResponse;
@@ -78,11 +78,10 @@ async function useFetchAndSummarize(data) {
             : updatedData[i].image;
       }),
     );
+    return updatedData;
   } catch (error) {
     console.error(`An error occurred: ${error.message}`);
   }
-
-  return updatedData;
 }
 
 module.exports = useFetchAndSummarize;
