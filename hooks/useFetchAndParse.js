@@ -6,7 +6,7 @@ export const useFetchAndParse = (url, corsProxy, refreshKey, setData) => {
   const [error, setError] = useState(null);
 
   useEffect(() => {
-    const fetchUrl = url;
+    const fetchUrl = url + "/topStories";
 
     const getData = async () => {
       try {

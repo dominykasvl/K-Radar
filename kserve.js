@@ -8,11 +8,13 @@ const port = 3000;
 
 const SummarizerManager = require("node-summarizer").SummarizerManager;
 const useFetchAndParse = require("./K-Serve-functions/News.js");
+const useFetchAndSummarize = require("./K-Serve-functions/Summarise.js");
 
 ////////////////////////
 
 const crypto = require("crypto");
 const readline = require("readline");
+let data = "";
 
 function decrypt(encryptedText, secretKey, iv) {
   let hash = crypto.createHash("sha256");
@@ -101,13 +103,38 @@ async function startServer(apikey) {
   app.get("/topStories", async (req, res) => {
     try {
       const response = await useFetchAndParse();
-      if (response) console.log("Got defined response. Sending...");
-      res.json(response);
+      if (response) {
+        console.log(
+          "Got defined data response. Saving to temporary memory. Sending...",
+        );
+        data = response;
+        res.json(data);
+      } else throw new Error("No data found");
     } catch (error) {
       console.error(error);
       res
         .status(500)
         .json({ error: "An error occurred while fetching the top stories" });
+    }
+  });
+
+  app.get("/topStoriesSummaries", async (req, res) => {
+    try {
+      if (data) {
+        const response = await useFetchAndSummarize(data);
+        if (response) {
+          console.log(
+            "Got defined summary response. Saving to temporary memory. Sending...",
+          );
+          data = response;
+          res.json(response);
+        } else throw new Error("No data found");
+      } else throw new Error("No data found");
+    } catch (error) {
+      console.error(error);
+      res.status(500).json({
+        error: "An error occurred while fetching the top stories summaries",
+      });
     }
   });
 

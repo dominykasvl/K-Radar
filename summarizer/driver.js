@@ -169,7 +169,7 @@ Summarizer.Utility.runPageRankOnce = function (
 
 ///////////////////////////////////////////////////////
 
-export function summary(text) {
+function summary(text) {
   // Configure this object for tweaking summarization params.
   var configObj = {
     maxIter: 100,
@@ -226,3 +226,5 @@ export function summary(text) {
     return finalResult;
   }
 }
+
+module.exports = summary;

@@ -1,36 +1,36 @@
-import React, { useState, useRef } from 'react';
-import { View, Text } from 'react-native';
-import { StatusBar } from 'expo-status-bar';
-import { StyleSheet } from 'react-native';
+import React, { useState, useRef } from "react";
+import { View, Text } from "react-native";
+import { StatusBar } from "expo-status-bar";
+import { StyleSheet } from "react-native";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
-import { PanGestureHandler, State } from 'react-native-gesture-handler';
-import { Animated } from 'react-native';
-import { WebView } from 'react-native-webview';
+import { PanGestureHandler, State } from "react-native-gesture-handler";
+import { Animated } from "react-native";
+import { WebView } from "react-native-webview";
 
-import ContentCard from './components/ContentCard';
-import GestureHanlders from './components/GestureHandlers';
+import ContentCard from "./components/ContentCard";
+import GestureHanlders from "./components/GestureHandlers";
 
-import { useFetchAndParse } from './hooks/useFetchAndParse';
-import { useFetchAndSummarize } from './hooks/useFetchAndSummarize';
-import { onOpenWithWebBrowser, isValidUrl } from './utilities/NetworkTools';
-import config from './config/config.json';
-import storage from './config/storage';
+import { useFetchAndParse } from "./hooks/useFetchAndParse";
+import { useFetchAndSummarize } from "./hooks/useFetchAndSummarize";
+import { onOpenWithWebBrowser, isValidUrl } from "./utilities/NetworkTools";
+import config from "./config/config.json";
+import storage from "./config/storage";
 
-const PlaceholderImage = require('./assets/images/background-image.png');
+const PlaceholderImage = require("./assets/images/background-image.png");
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#25292e',
-    alignItems: 'center',
+    backgroundColor: "#25292e",
+    alignItems: "center",
   },
 });
 
 const wait = (timeout) => {
-  return new Promise(resolve => {
+  return new Promise((resolve) => {
     setTimeout(resolve, timeout);
   });
-}
+};
 
 const App = () => {
   const [refreshKey, setRefreshKey] = useState(0);
@@ -46,11 +46,18 @@ const App = () => {
   const { error } = useFetchAndParse(url, corsProxy, refreshKey, setData);
   //console.log('data:', data);
   if (error !== null) {
-    console.log('error:', error);
+    console.log("error:", error);
   }
-  const { errorWithSummaries } = useFetchAndSummarize(data, summariesAPI, corsProxy, refreshKey, setData, url);
+  const { errorWithSummaries } = useFetchAndSummarize(
+    data,
+    summariesAPI,
+    corsProxy,
+    refreshKey,
+    setData,
+    url,
+  );
   if (errorWithSummaries !== null) {
-    console.log('errorWithSummaries:', errorWithSummaries);
+    console.log("errorWithSummaries:", errorWithSummaries);
   }
 
   const [showWebView, setShowWebView] = useState(false);
@@ -91,7 +98,9 @@ const App = () => {
             <ContentCard
               placeholderImageSource={PlaceholderImage}
               data={data}
-              onPress={() => onOpenWithWebBrowser(currentUrl, setCurrentUrl, setShowWebView)}
+              onPress={() =>
+                onOpenWithWebBrowser(currentUrl, setCurrentUrl, setShowWebView)
+              }
               refreshing={refreshing}
               onRefresh={onRefresh}
               showWebView={showWebView} // Pass the showWebView state
@@ -102,25 +111,24 @@ const App = () => {
             <WebView
               source={{ uri: currentUrl }}
               incognito={true}
-              style={{ marginTop: 20, backgroundColor: 'transparent' }}
-              onShouldStartLoadWithRequest={request => {
+              style={{ marginTop: 20, backgroundColor: "transparent" }}
+              onShouldStartLoadWithRequest={(request) => {
                 // Only allow navigating within this website
                 return request.url.startsWith("https://");
               }}
               onError={(syntheticEvent) => {
                 const { nativeEvent } = syntheticEvent;
-                console.warn('WebView error: ', nativeEvent);
+                console.warn("WebView error: ", nativeEvent);
               }}
               onLoadEnd={() => translateXRight.setValue(0)}
               onNavigationStateChange={(navState) => {
                 setCurrentNavUri(navState.url);
                 setLoadingProgress(navState.loading);
-                console.log('navState.loading:', navState.loading);
+                console.log("navState.loading:", navState.loading);
               }}
             />
           }
-        >
-        </GestureHanlders>
+        ></GestureHanlders>
         <StatusBar style="light" />
       </View>
     </GestureHandlerRootView>

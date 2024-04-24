@@ -1,7 +1,7 @@
 const htmlparser2 = require("htmlparser2-without-node-native");
 
 async function useFetchAndParse() {
-  const url = "https://www.allkpop.com/";
+  const url = "https://www.allkpop.com";
 
   try {
     console.log("Fetching data...");
