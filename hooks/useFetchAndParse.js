@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import sha256 from "crypto-js/sha256";
 import storage from "../config/storage";
 
-export const useFetchAndParse = (url, corsProxy, refreshKey, setData) => {
+export const useFetchAndParse = (url, refreshKey, setData) => {
   const [error, setError] = useState(null);
 
   useEffect(() => {
@@ -37,7 +37,7 @@ export const useFetchAndParse = (url, corsProxy, refreshKey, setData) => {
     };
 
     getData();
-  }, [url, corsProxy, refreshKey]);
+  }, [url, refreshKey]);
 
   return { error };
 };

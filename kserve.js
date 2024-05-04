@@ -102,23 +102,29 @@ async function startServer(apikey) {
 
   app.get("/topStories", async (req, res) => {
     try {
-      const response = await useFetchAndParse();
-      if (response) {
-        console.log(
-          "Got defined data response. Saving to temporary memory. Sending...",
-        );
-        data = response;
-        if (data) {
-          const responseWithSummaries = await useFetchAndSummarize(data);
-          if (responseWithSummaries) {
-            console.log(
-              "Got defined summary response. Saving to temporary memory. Sending...",
-            );
-            data = responseWithSummaries;
-            res.json(data);
+      //Cache the data for testing purposes as to not stress 3rd party website with needless requests.
+      if (data) {
+        console.log("Got cached data. Sending it instead. Sending...");
+        res.json(data);
+      } else {
+        const response = await useFetchAndParse();
+        if (response) {
+          console.log(
+            "Got defined data response. Saving to temporary memory. Sending...",
+          );
+          data = response;
+          if (data) {
+            const responseWithSummaries = await useFetchAndSummarize(data);
+            if (responseWithSummaries) {
+              console.log(
+                "Got defined summary response. Saving to temporary memory. Sending...",
+              );
+              data = responseWithSummaries;
+              res.json(data);
+            } else throw new Error("No data found");
           } else throw new Error("No data found");
         } else throw new Error("No data found");
-      } else throw new Error("No data found");
+      }
     } catch (error) {
       console.error(error);
       res
