@@ -7,7 +7,6 @@ import ContentCard from "./components/ContentCard";
 import GestureHanlders from "./components/GestureHandlers";
 
 import { useFetchAndParse } from "./hooks/useFetchAndParse";
-import { onOpenWithWebBrowser } from "./utilities/NetworkTools";
 import config from "./config/config.json";
 import storage from "./config/storage";
 
@@ -56,6 +55,7 @@ const App = () => {
       wait(2000).then(() => {
         setRefreshing(false);
         setRefreshKey(refreshKey + 1);
+        console.log("Refreshed saved data");
       });
     });
   }, [refreshKey]);
@@ -72,9 +72,6 @@ const App = () => {
             <ContentCard
               placeholderImageSource={PlaceholderImage}
               data={data}
-              onPress={() =>
-                onOpenWithWebBrowser(currentUrl, setCurrentUrl, setShowWebView)
-              }
               refreshing={refreshing}
               onRefresh={onRefresh}
               showWebView={showWebView} // Pass the showWebView state

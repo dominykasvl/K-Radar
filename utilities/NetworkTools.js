@@ -1,23 +1,19 @@
 import NetInfo from "@react-native-community/netinfo";
+import { Linking } from "react-native";
 
-export const onOpenWithWebBrowser = async (
-  url,
-  setCurrentUrl,
-  setShowWebView,
-) => {
+export const onOpenWithWebBrowser = async (link) => {
   try {
     const netInfo = await NetInfo.fetch();
     if (!netInfo.isConnected && !netInfo.isInternetReachable) {
       alert("No internet connection");
       return;
     }
-    if (!isValidUrl(url)) {
-      console.error("Invalid URL:", url);
+    if (!isValidUrl(link)) {
+      console.error("Invalid URL:", link);
       return;
     }
 
-    setCurrentUrl(url);
-    setShowWebView(true);
+    Linking.openURL(link);
   } catch (error) {
     console.error("Failed to open browser:", error);
   }

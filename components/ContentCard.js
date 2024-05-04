@@ -14,12 +14,14 @@ import moment from "moment";
 import MaterialIcons from "@expo/vector-icons/MaterialIcons";
 import { Dimensions } from "react-native";
 
+import { onOpenWithWebBrowser } from "../utilities/NetworkTools";
+
 const screenHeight = Dimensions.get("window").height;
 const screenWidth = Dimensions.get("window").width;
 const backgroundBottomMargin = 50;
 
 const Item = memo(
-  ({ item, onPress, placeholderImageSource }) => {
+  ({ item, placeholderImageSource }) => {
     const [showSummary, setShowSummary] = useState(false);
     const imageSource = item.image
       ? { uri: item.image }
@@ -35,7 +37,7 @@ const Item = memo(
       position: "absolute",
       left: 0,
       right: 0,
-      bottom: 0,
+      bottom: 10,
       borderRadius: 18,
       backgroundColor: "rgba(0, 0, 0, 0.6)", // Semi-transparent background
       height: showSummary
@@ -81,7 +83,10 @@ const Item = memo(
             )}
           </View>
         </View>
-        <Pressable onPress={() => onPress(item.link)} style={styles.pressable}>
+        <Pressable
+          onPress={() => onOpenWithWebBrowser(item.link)}
+          style={styles.pressable}
+        >
           <MaterialIcons name="open-in-browser" size={32} color="white" />
         </Pressable>
       </Pressable>
@@ -95,7 +100,6 @@ const Item = memo(
 export default function ContentCard({
   placeholderImageSource,
   data,
-  onPress,
   refreshing,
   onRefresh,
   showWebView,
@@ -120,11 +124,7 @@ export default function ContentCard({
         <FlatList
           data={data}
           renderItem={({ item }) => (
-            <Item
-              item={item}
-              onPress={onPress}
-              placeholderImageSource={placeholderImageSource}
-            />
+            <Item item={item} placeholderImageSource={placeholderImageSource} />
           )}
           keyExtractor={(item, index) => index.toString()}
           pagingEnabled
@@ -144,8 +144,8 @@ export default function ContentCard({
 const styles = StyleSheet.create({
   parentContainer: {
     flex: 1,
-    width: "50%",
-    height: "50%",
+    width: "100%",
+    height: "100%",
   },
   container: {
     flex: 1,
@@ -171,7 +171,7 @@ const styles = StyleSheet.create({
   },
   pressable: {
     position: "absolute",
-    bottom: 20,
+    bottom: 30,
     right: 20,
     paddingRight: 5,
   },
@@ -184,6 +184,7 @@ const styles = StyleSheet.create({
     width: "100%",
     height: screenHeight * 0.5,
     borderRadius: 18,
+    marginBottom: 10,
   },
   textContainer: {
     width: "100%",

@@ -104,7 +104,6 @@ export default function GestureHandlers({
       >
         <Animated.View
           style={[
-            styles.container,
             styles.leftSwipeAnimatedView,
             { transform: [{ translateX: translateXRight }] },
           ]}
@@ -152,7 +151,7 @@ export default function GestureHandlers({
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    width: "100%",
+    width: "50%",
     height: "100%",
     backgroundColor: "#25292e",
     alignItems: "center",
@@ -161,6 +160,8 @@ const styles = StyleSheet.create({
     flex: 1,
     width: "100%",
     height: "100%",
+    backgroundColor: "#25292e",
+    alignItems: "center",
   },
   rightSwipeAnimatedView: {
     flex: 1,
