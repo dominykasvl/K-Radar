@@ -1,5 +1,5 @@
 import React, { useState, useRef } from "react";
-import { View, StyleSheet, Animated } from "react-native";
+import { View, StyleSheet, Animated, Dimensions } from "react-native";
 import { StatusBar } from "expo-status-bar";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
 
@@ -12,9 +12,21 @@ import storage from "./config/storage";
 
 const PlaceholderImage = require("./assets/images/background-image.png");
 
+const screenHeight = Dimensions.get("window").height;
+const screenWidth = Dimensions.get("window").width;
+
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+    height: "100%",
+    width: "100%",
+    backgroundColor: "#25292e",
+    alignItems: "center",
+  },
+  gestureContainer: {
+    flex: 1,
+    height: screenHeight,
+    width: screenWidth,
     backgroundColor: "#25292e",
     alignItems: "center",
   },
@@ -40,12 +52,7 @@ const App = () => {
   }
 
   const [showWebView, setShowWebView] = useState(false);
-  const [currentUrl, setCurrentUrl] = useState(null);
-
   const [refreshing, setRefreshing] = useState(false);
-
-  // Assume `currentIndex` is a state variable that gets updated whenever the visible item in content card changes
-  const [currentIndex, setCurrentIndex] = useState(0);
 
   const translateXRight = useRef(new Animated.Value(0)).current;
 
@@ -61,7 +68,7 @@ const App = () => {
   }, [refreshKey]);
 
   return (
-    <GestureHandlerRootView style={{ flex: 1 }}>
+    <GestureHandlerRootView style={styles.gestureContainer}>
       <View style={styles.container}>
         <GestureHanlders
           showWebView={showWebView} // Pass the showWebView state
@@ -75,7 +82,7 @@ const App = () => {
               refreshing={refreshing}
               onRefresh={onRefresh}
               showWebView={showWebView} // Pass the showWebView state
-              setCurrentIndex={setCurrentIndex} // Pass the setCurrentIndex function
+              screenHeight={screenHeight} // Pass the screenHeight value
             />
           }
           // The WebView component does not support web browsers. //TODO: Create an alternative method for opening links in the web browser.

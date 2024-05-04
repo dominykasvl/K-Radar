@@ -12,16 +12,13 @@ import {
 } from "react-native";
 import moment from "moment";
 import MaterialIcons from "@expo/vector-icons/MaterialIcons";
-import { Dimensions } from "react-native";
 
 import { onOpenWithWebBrowser } from "../utilities/NetworkTools";
 
-const screenHeight = Dimensions.get("window").height;
-const screenWidth = Dimensions.get("window").width;
 const backgroundBottomMargin = 50;
 
 const Item = memo(
-  ({ item, placeholderImageSource }) => {
+  ({ item, placeholderImageSource, screenHeight }) => {
     const [showSummary, setShowSummary] = useState(false);
     const imageSource = item.image
       ? { uri: item.image }
@@ -46,13 +43,20 @@ const Item = memo(
       width: "100%",
     };
 
+    const image = {
+      width: "100%",
+      height: screenHeight * 0.5,
+      borderRadius: 18,
+      marginBottom: 10,
+    };
+
     return (
       <Pressable
         onPressIn={() => setShowSummary(true)}
         onPressOut={() => setShowSummary(false)}
         style={styles.imageContainer}
       >
-        <Image source={imageSource} style={styles.image} resizeMode="auto" />
+        <Image source={imageSource} style={image} resizeMode="auto" />
         <View style={backgroundStyle}>
           <View style={styles.textContainer}>
             <Text
@@ -103,14 +107,8 @@ export default function ContentCard({
   refreshing,
   onRefresh,
   showWebView,
-  setCurrentIndex,
+  screenHeight,
 }) {
-  const onViewableItemsChanged = useRef(({ viewableItems }) => {
-    if (viewableItems.length > 0) {
-      setCurrentIndex(viewableItems[0].index);
-    }
-  }).current;
-
   return (
     <View style={styles.parentContainer}>
       {Platform.OS === "web" && (
@@ -124,11 +122,13 @@ export default function ContentCard({
         <FlatList
           data={data}
           renderItem={({ item }) => (
-            <Item item={item} placeholderImageSource={placeholderImageSource} />
+            <Item
+              item={item}
+              placeholderImageSource={placeholderImageSource}
+              screenHeight={screenHeight}
+            />
           )}
           keyExtractor={(item, index) => index.toString()}
-          pagingEnabled
-          onViewableItemsChanged={onViewableItemsChanged}
           viewabilityConfig={{
             itemVisiblePercentThreshold: 50, // Adjust this value as needed
           }}
@@ -179,12 +179,6 @@ const styles = StyleSheet.create({
     width: "100%",
     height: "100%",
     position: "relative",
-  },
-  image: {
-    width: "100%",
-    height: screenHeight * 0.5,
-    borderRadius: 18,
-    marginBottom: 10,
   },
   textContainer: {
     width: "100%",
