@@ -9,8 +9,6 @@ import {
 import { PanGestureHandler, State } from "react-native-gesture-handler";
 
 export default function GestureHandlers({
-  showWebView,
-  setShowWebView,
   translateXRight,
   loadingProgress,
   contentCard,
@@ -44,7 +42,6 @@ export default function GestureHandlers({
           duration: 250,
           useNativeDriver: true,
         }).start(() => {
-          setShowWebView(true);
           setZIndex(1000);
           translateXRight.setValue(0);
         });
@@ -54,7 +51,6 @@ export default function GestureHandlers({
           duration: 250,
           useNativeDriver: true,
         }).start(() => {
-          setShowWebView(false);
           setZIndex(-1);
           translateXRight.setValue(0);
         });
@@ -78,7 +74,6 @@ export default function GestureHandlers({
           duration: 250,
           useNativeDriver: true,
         }).start(() => {
-          setShowWebView(false);
           translateX.setValue(0);
           setZIndex(-1);
         });
@@ -88,7 +83,6 @@ export default function GestureHandlers({
           duration: 250,
           useNativeDriver: true,
         }).start(() => {
-          setShowWebView(true);
           translateX.setValue(0);
           setZIndex(1000);
         });
@@ -120,7 +114,6 @@ export default function GestureHandlers({
       <PanGestureHandler
         onGestureEvent={onGestureEventRight}
         onHandlerStateChange={onHandlerStateChangeRight}
-        enabled={showWebView}
       >
         <Animated.View
           style={[
@@ -128,7 +121,6 @@ export default function GestureHandlers({
             {
               transform: [{ translateX }],
               zIndex,
-              pointerEvents: showWebView ? "auto" : "none",
             },
           ]}
         >

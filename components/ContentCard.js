@@ -96,9 +96,7 @@ const Item = memo(
       </Pressable>
     );
   },
-  (prevProps, nextProps) =>
-    prevProps.item === nextProps.item &&
-    prevProps.onPress === nextProps.onPress,
+  (prevProps, nextProps) => prevProps.item === nextProps.item,
 );
 
 export default function ContentCard({
@@ -106,7 +104,6 @@ export default function ContentCard({
   data,
   refreshing,
   onRefresh,
-  showWebView,
   screenHeight,
 }) {
   return (
@@ -134,7 +131,6 @@ export default function ContentCard({
           }}
           refreshing={refreshing}
           onRefresh={onRefresh}
-          scrollEnabled={!showWebView} // Disable scrolling when the WebView is shown
         />
       </View>
     </View>
