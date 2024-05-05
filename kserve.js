@@ -28,18 +28,18 @@ app.get("/topStories", async (req, res) => {
     // } else {
     const response = await fetchNewsData();
     if (response) {
-      console.log(
-        "Got defined data response. Saving to temporary memory. Sending...",
-      );
+      console.log("Got defined data response. Saving to temporary memory.");
       data = response;
       if (data) {
-        const responseWithSummaries = await fetchExtraData(data);
-        if (responseWithSummaries) {
+        const responseWithExtras = await fetchExtraData(data);
+        if (responseWithExtras) {
           console.log(
-            "Got defined summary response. Saving to temporary memory. Sending...",
+            "Got defined summary response. Saving to temporary memory.",
           );
-          data = responseWithSummaries;
+          data = responseWithExtras;
+          console.log("Data cached. Sending it...");
           res.json(data);
+          console.log("Data sent.");
         } else throw new Error("No data found");
       } else throw new Error("No data found");
     } else throw new Error("No data found");

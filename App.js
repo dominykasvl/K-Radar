@@ -25,12 +25,6 @@ const styles = StyleSheet.create({
   },
 });
 
-const wait = (timeout) => {
-  return new Promise((resolve) => {
-    setTimeout(resolve, timeout);
-  });
-};
-
 const App = () => {
   const [screenDimensions, setScreenDimensions] = useState({
     width: Dimensions.get("window").width,
