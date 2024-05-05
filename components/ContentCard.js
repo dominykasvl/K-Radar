@@ -194,7 +194,6 @@ const styles = StyleSheet.create({
     paddingLeft: 10, // Add left padding
     //backgroundColor: 'rgba(0, 0, 0, 0.3)', // Semi-transparent background
     marginBottom: backgroundBottomMargin, // Adjust this value as needed
-    width: "100%", // Add this line
   },
   background: {
     position: "absolute",

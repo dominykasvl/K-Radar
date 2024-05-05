@@ -23,38 +23,25 @@ export default function GestureHandlers({
   };
 
   const onHandlerStateChangeLeft = ({ nativeEvent }) => {
-    console.log("Left swipe - state:", nativeEvent.state);
     if (nativeEvent.state === State.ACTIVE) {
       console.log("Left swipe BEGAN - translationX:", nativeEvent.translationX);
-      if (nativeEvent.translationX < 0) {
-        // TODO: Fix opening web links. This section of code doesn't show up in the console logs at all.
-      }
+      // Additional logic if needed when swipe starts
     }
+
     if (nativeEvent.state === State.END) {
+      console.log("Left swipe - state:", nativeEvent.state);
       console.log("Left swipe - translationX:", nativeEvent.translationX);
-      if (nativeEvent.translationX < -100) {
-        console.log(
-          "Left swipe BEGAN - translationX",
-          nativeEvent.translationX,
-        );
-        Animated.timing(translateXRight, {
-          toValue: -1000,
-          duration: 250,
-          useNativeDriver: true,
-        }).start(() => {
-          setZIndex(1000);
-          translateXRight.setValue(0);
-        });
-      } else {
-        Animated.timing(translateXRight, {
-          toValue: 0,
-          duration: 250,
-          useNativeDriver: true,
-        }).start(() => {
-          setZIndex(-1);
-          translateXRight.setValue(0);
-        });
-      }
+
+      // Determine final zIndex based on swipe direction
+      const finalZIndex = nativeEvent.translationX < -100 ? 1000 : -1;
+
+      // Call the refactored function with appropriate parameters
+      handleEndGesture(
+        nativeEvent.translationX,
+        100,
+        translateXRight,
+        finalZIndex,
+      );
     }
   };
 
@@ -65,28 +52,44 @@ export default function GestureHandlers({
   };
 
   const onHandlerStateChangeRight = ({ nativeEvent }) => {
-    console.log("Right swipe - state:", nativeEvent.state);
     if (nativeEvent.state === State.END) {
+      // Log the current state and translation for debugging
+      console.log("Right swipe - state:", nativeEvent.state);
       console.log("Right swipe - translationX:", nativeEvent.translationX);
-      if (nativeEvent.translationX > 100) {
-        Animated.timing(translateX, {
-          toValue: 1000,
-          duration: 250,
-          useNativeDriver: true,
-        }).start(() => {
-          translateX.setValue(0);
-          setZIndex(-1);
-        });
-      } else {
-        Animated.timing(translateX, {
-          toValue: 0,
-          duration: 250,
-          useNativeDriver: true,
-        }).start(() => {
-          translateX.setValue(0);
-          setZIndex(1000);
-        });
-      }
+
+      // Determine final zIndex based on swipe direction
+      const finalZIndex = nativeEvent.translationX > 100 ? -1 : 1000;
+
+      // Call the refactored function with appropriate parameters
+      handleEndGesture(nativeEvent.translationX, 100, translateX, finalZIndex);
+    }
+  };
+
+  const handleEndGesture = (
+    translationX,
+    threshold,
+    animationTarget,
+    finalZIndex,
+  ) => {
+    const endValue = translationX > 0 ? 1000 : -1000; // Determine the end value based on swipe direction
+    if (Math.abs(translationX) > threshold) {
+      Animated.timing(animationTarget, {
+        toValue: endValue,
+        duration: 250,
+        useNativeDriver: true,
+      }).start(() => {
+        animationTarget.setValue(0);
+        setZIndex(finalZIndex);
+      });
+    } else {
+      Animated.timing(animationTarget, {
+        toValue: 0,
+        duration: 250,
+        useNativeDriver: true,
+      }).start(() => {
+        animationTarget.setValue(0);
+        setZIndex(-1);
+      });
     }
   };
 
@@ -106,7 +109,9 @@ export default function GestureHandlers({
             contentCard
           ) : (
             <View>
-              <Text>Failed to load content. Try to refresh.</Text>
+              <Text>
+                Failed to load content. Try to refresh. TODO: Beautify this
+              </Text>
             </View>
           )}
         </Animated.View>
