@@ -4,8 +4,8 @@ const http = require("http");
 const app = express();
 const port = 3000;
 
-const useFetchAndParse = require("./K-Serve-functions/News.js");
-const useFetchAndSummarize = require("./K-Serve-functions/Summarise.js");
+const fetchNewsData = require("./K-Serve-functions/News.js");
+const fetchExtraData = require("./K-Serve-functions/ExtraData.js");
 
 app.use(cors()); // Enable All CORS Requests
 app.use(express.json()); // for parsing application/json
@@ -26,14 +26,14 @@ app.get("/topStories", async (req, res) => {
     //   console.log("Got cached data. Sending it instead. Sending...");
     //   res.json(data);
     // } else {
-    const response = await useFetchAndParse();
+    const response = await fetchNewsData();
     if (response) {
       console.log(
         "Got defined data response. Saving to temporary memory. Sending...",
       );
       data = response;
       if (data) {
-        const responseWithSummaries = await useFetchAndSummarize(data);
+        const responseWithSummaries = await fetchExtraData(data);
         if (responseWithSummaries) {
           console.log(
             "Got defined summary response. Saving to temporary memory. Sending...",

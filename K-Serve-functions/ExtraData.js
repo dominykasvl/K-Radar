@@ -1,11 +1,5 @@
 const axios = require("axios");
 const cheerio = require("cheerio");
-const summary = require("../summarizer/driver");
-
-function summarizeWithTextRan(text) {
-  console.warn("Using TextRan text summarizer");
-  return summary(text);
-}
 
 function summarizeText(text) {
   // Split the text into sentences
@@ -39,7 +33,7 @@ function summarizeText(text) {
   return sentences[0];
 }
 
-async function useFetchAndSummarize(data) {
+async function fetchExtraData(data) {
   if (!data || (data.length > 0 && data[0].summary)) return;
 
   const updatedData = [...data]; // Create a copy of data
@@ -74,14 +68,16 @@ async function useFetchAndSummarize(data) {
         }
         updatedData[i].image =
           articleThumbnail !== undefined
-            ? url + articleThumbnail
+            ? new URL(articleThumbnail, url).href
             : updatedData[i].image;
       }),
     );
     return updatedData;
   } catch (error) {
-    console.error(`An error occurred: ${error.message}`);
+    console.error(
+      `An error occurred trying to aquire extra data: ${error.message}`,
+    );
   }
 }
 
-module.exports = useFetchAndSummarize;
+module.exports = fetchExtraData;

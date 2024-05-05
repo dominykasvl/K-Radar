@@ -1,6 +1,6 @@
 const htmlparser2 = require("htmlparser2-without-node-native");
 
-async function useFetchAndParse() {
+async function fetchNewsData() {
   const url = "https://www.allkpop.com";
 
   try {
@@ -106,4 +106,4 @@ async function useFetchAndParse() {
   }
 }
 
-module.exports = useFetchAndParse;
+module.exports = fetchNewsData;
