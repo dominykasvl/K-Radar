@@ -1,4 +1,4 @@
-import React, { memo, useState } from "react";
+import React, { memo, useState, useRef } from "react";
 import {
   Platform,
   StyleSheet,
@@ -7,8 +7,10 @@ import {
   View,
   Pressable,
   FlatList,
+  Animated,
 } from "react-native";
 import MaterialIcons from "@expo/vector-icons/MaterialIcons";
+import { LinearGradient } from "expo-linear-gradient";
 import { colors } from "../assets/theme/theme";
 
 import { onOpenWithWebBrowser } from "../utilities/NetworkTools";
@@ -38,8 +40,6 @@ const Item = memo(
 
     const backgroundStyle = {
       position: "absolute",
-      left: 0,
-      right: 0,
       bottom: 10,
       borderRadius: 18,
       backgroundColor: "rgba(0, 0, 0, 0.6)", // Semi-transparent background
@@ -50,24 +50,41 @@ const Item = memo(
           backgroundBottomMargin +
           backgroundTopMargin
         : titleHeight + dateHeight + backgroundBottomMargin, // Adjust this value as needed
-      width: "100%",
+      alignSelf: "center",
     };
 
     const image = {
-      width: "100%",
       height: screenHeight * 0.5,
       borderRadius: 18,
       marginBottom: 10,
+      alignSelf: "center",
+    };
+
+    const [isPressed, setIsPressed] = useState(false);
+
+    const handlePressIn = () => {
+      setIsPressed(true);
+      setShowSummary(true);
+    };
+
+    const handlePressOut = () => {
+      setIsPressed(false);
+      setShowSummary(false);
     };
 
     return (
       <Pressable
-        onPressIn={() => setShowSummary(true)}
-        onPressOut={() => setShowSummary(false)}
+        onHoverIn={() => handlePressIn()}
+        onHoverOut={() => handlePressOut()}
         style={styles.imageContainer}
+        onPress={() => onOpenWithWebBrowser(item.link)}
       >
-        <Image source={imageSource} style={image} resizeMode="auto" />
-        <View style={backgroundStyle}>
+        <Image
+          source={imageSource}
+          style={[image, { width: isPressed ? "100%" : "90%" }]}
+          resizeMode="auto"
+        />
+        <View style={[backgroundStyle, { width: isPressed ? "100%" : "90%" }]}>
           <View style={styles.textContainer}>
             <Text
               style={styles.title}
@@ -97,12 +114,11 @@ const Item = memo(
             )}
           </View>
         </View>
-        <Pressable
-          onPress={() => onOpenWithWebBrowser(item.link)}
-          style={styles.pressable}
-        >
-          <MaterialIcons name="open-in-browser" size={32} color="white" />
-        </Pressable>
+        {isPressed && (
+          <Pressable style={styles.pressable}>
+            <MaterialIcons name="open-in-browser" size={32} color="white" />
+          </Pressable>
+        )}
       </Pressable>
     );
   },
@@ -116,11 +132,42 @@ export default function ContentCard({
   onRefresh,
   screenHeight,
 }) {
+  const [isHovered, setHovered] = useState(false);
+  const [isPressed, setPressed] = useState(false);
+
+  const getButtonStyle = () => {
+    if (isPressed) {
+      return [styles.pressableRefresh, styles.pressableRefreshActive];
+    } else if (isHovered) {
+      return [styles.pressableRefresh, styles.pressableRefreshHover];
+    } else {
+      return styles.pressableRefresh;
+    }
+  };
+
+  // Use useRef to maintain the animated value
+  const scrollY = useRef(new Animated.Value(0)).current;
+
+  // Animated event for binding the scroll to the animated value
+  const handleScroll = Animated.event(
+    [{ nativeEvent: { contentOffset: { y: scrollY } } }],
+    { useNativeDriver: true },
+  );
+
   return (
     <View style={styles.parentContainer}>
       {Platform.OS === "web" && (
         <View style={styles.refreshButtonContainer}>
-          <Pressable style={styles.pressableRefresh} onPress={onRefresh}>
+          <Pressable
+            style={getButtonStyle()}
+            onPressIn={() => setPressed(true)}
+            onPressOut={() => {
+              setPressed(false);
+              onRefresh();
+            }}
+            onMouseEnter={() => setHovered(true)}
+            onMouseLeave={() => setHovered(false)}
+          >
             <MaterialIcons name="refresh" size={24} color="black" />
           </Pressable>
         </View>
@@ -141,7 +188,28 @@ export default function ContentCard({
           }}
           refreshing={refreshing}
           onRefresh={onRefresh}
+          onScroll={handleScroll}
+          scrollEventThrottle={80}
         />
+        <Animated.View
+          style={[
+            styles.fade,
+            {
+              opacity: scrollY.interpolate({
+                inputRange: [0, 50], // Adjust input range based on your needs
+                outputRange: [0, 1],
+                extrapolate: "clamp", // Clamp so opacity doesn't go beyond 1
+              }),
+            },
+          ]}
+        >
+          <LinearGradient
+            colors={["rgba(255,255,255,0.8)", "transparent"]}
+            start={{ x: 0, y: 0 }}
+            end={{ x: 0, y: 1 }}
+            style={styles.gradient}
+          />
+        </Animated.View>
       </View>
     </View>
   );
@@ -160,6 +228,8 @@ const styles = StyleSheet.create({
   },
   refreshButtonContainer: {
     padding: 10,
+    alignItems: "center",
+    justifyContent: "center",
   },
   loadingContainer: {
     flex: 1,
@@ -167,13 +237,21 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
   pressableRefresh: {
-    position: "absolute",
-    top: 0,
-    bottom: 0,
-    left: 0,
-    right: 0,
-    justifyContent: "center",
+    backgroundColor: "#f0f0f0", // Light gray background
+    borderRadius: 30, // Circular button
+    width: 50, // Fixed size for the button
+    height: 50,
     alignItems: "center",
+    justifyContent: "center",
+    boxShadow: "0 4px 6px rgba(0, 0, 0, 0.1)", // Subtle shadow
+    transition: "background-color 0.3s, transform 0.2s", // Smooth transitions for color and transform
+  },
+  pressableRefreshHover: {
+    backgroundColor: "#e0e0e0", // Slightly darker on hover
+  },
+  pressableRefreshActive: {
+    backgroundColor: "#d0d0d0", // Even darker when pressed
+    transform: [{ scale: 0.96 }], // Slightly scale down when pressed
   },
   pressable: {
     position: "absolute",
@@ -222,5 +300,19 @@ const styles = StyleSheet.create({
     fontSize: 16,
     color: colors.text,
     marginTop: backgroundTopMargin,
+  },
+  gradient: {
+    position: "absolute",
+    left: 0,
+    right: 0,
+    top: 0,
+    height: 50,
+  },
+  fade: {
+    position: "absolute",
+    left: 0,
+    right: 0,
+    top: 0,
+    height: 50,
   },
 });
