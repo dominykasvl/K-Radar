@@ -1,12 +1,10 @@
-import React, { memo, useState, useRef } from "react";
+import React, { memo, useState } from "react";
 import {
   Platform,
-  RefreshControl,
   StyleSheet,
   Image,
   Text,
   View,
-  ActivityIndicator,
   Pressable,
   FlatList,
 } from "react-native";
