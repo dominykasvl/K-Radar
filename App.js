@@ -2,6 +2,7 @@ import React, { useState, useRef, useEffect } from "react";
 import { View, StyleSheet, Animated, Dimensions } from "react-native";
 import { StatusBar } from "expo-status-bar";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
+import { LinearGradient } from "expo-linear-gradient";
 
 import ContentCard from "./components/ContentCard";
 import GestureHandlers from "./components/GestureHandlers";
@@ -10,6 +11,7 @@ import { useFetchAndParse } from "./hooks/useFetchAndParse";
 import config from "./config/config.json";
 import storage from "./config/storage";
 
+import { colors } from "./assets/theme/theme";
 const PlaceholderImage = require("./assets/images/background-image.png");
 
 const styles = StyleSheet.create({
@@ -17,11 +19,18 @@ const styles = StyleSheet.create({
     flex: 1,
     height: "100%",
     width: "100%",
-    backgroundColor: "#25292e",
     alignItems: "center",
   },
   gestureContainer: {
     ...StyleSheet.absoluteFillObject, // Fills the parent container
+  },
+  gradient: {
+    flex: 1,
+    width: "100%",
+    height: "100%",
+    justifyContent: "center",
+    alignItems: "center",
+    padding: 20,
   },
 });
 
@@ -80,24 +89,29 @@ const App = () => {
   }, []);
 
   return (
-    <GestureHandlerRootView style={styles.gestureContainer}>
-      <View style={styles.container}>
-        <GestureHandlers
-          translateXRight={translateXRight} // Pass the translateXRight ref
-          loadingProgress={loadingProgress} // Pass the loadingProgress state
-          contentCard={
-            <ContentCard
-              placeholderImageSource={PlaceholderImage}
-              data={data}
-              refreshing={refreshing}
-              onRefresh={onRefresh}
-              screenHeight={screenDimensions.height} // Pass the screenHeight value
-            />
-          } // The WebView component does not support web browsers. //TODO: Create an alternative method for opening links in the web browser.
-        ></GestureHandlers>
-        <StatusBar style="light" />
-      </View>
-    </GestureHandlerRootView>
+    <LinearGradient
+      colors={[colors.primary, colors.accent]} // Using defined vibrant colors
+      style={styles.gradient}
+    >
+      <GestureHandlerRootView style={styles.gestureContainer}>
+        <View style={styles.container}>
+          <GestureHandlers
+            translateXRight={translateXRight} // Pass the translateXRight ref
+            loadingProgress={loadingProgress} // Pass the loadingProgress state
+            contentCard={
+              <ContentCard
+                placeholderImageSource={PlaceholderImage}
+                data={data}
+                refreshing={refreshing}
+                onRefresh={onRefresh}
+                screenHeight={screenDimensions.height} // Pass the screenHeight value
+              />
+            }
+          ></GestureHandlers>
+          <StatusBar style="light" />
+        </View>
+      </GestureHandlerRootView>
+    </LinearGradient>
   );
 };
 

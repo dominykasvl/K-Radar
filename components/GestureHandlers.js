@@ -128,18 +128,7 @@ export default function GestureHandlers({
               zIndex,
             },
           ]}
-        >
-          {loadingProgress && (
-            <View style={styles.loadingProgress}>
-              <ActivityIndicator size="large" color="#0000ff" />
-            </View>
-          )}
-          {
-            <View>
-              <Text>TODO: Fix content loading</Text>
-            </View>
-          }
-        </Animated.View>
+        ></Animated.View>
       </PanGestureHandler>
     </View>
   );
@@ -148,16 +137,14 @@ export default function GestureHandlers({
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    width: "50%",
+    width: "40%",
     height: "100%",
-    backgroundColor: "#25292e",
     alignItems: "center",
   },
   leftSwipeAnimatedView: {
     flex: 1,
     width: "100%",
     height: "100%",
-    backgroundColor: "#25292e",
     alignItems: "center",
   },
   rightSwipeAnimatedView: {
@@ -166,7 +153,6 @@ const styles = StyleSheet.create({
     height: "100%",
     flexDirection: "column",
     position: "absolute",
-    backgroundColor: "#25292e",
   },
   loadingProgress: {
     flex: 1,

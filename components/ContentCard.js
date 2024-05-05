@@ -9,10 +9,12 @@ import {
   FlatList,
 } from "react-native";
 import MaterialIcons from "@expo/vector-icons/MaterialIcons";
+import { colors } from "../assets/theme/theme";
 
 import { onOpenWithWebBrowser } from "../utilities/NetworkTools";
 
 const backgroundBottomMargin = 50;
+const backgroundTopMargin = 10;
 
 const Item = memo(
   ({ item, placeholderImageSource, screenHeight }) => {
@@ -42,7 +44,11 @@ const Item = memo(
       borderRadius: 18,
       backgroundColor: "rgba(0, 0, 0, 0.6)", // Semi-transparent background
       height: showSummary
-        ? summaryHeight + titleHeight + dateHeight + backgroundBottomMargin
+        ? summaryHeight +
+          titleHeight +
+          dateHeight +
+          backgroundBottomMargin +
+          backgroundTopMargin
         : titleHeight + dateHeight + backgroundBottomMargin, // Adjust this value as needed
       width: "100%",
     };
@@ -204,9 +210,9 @@ const styles = StyleSheet.create({
     width: "100%",
   },
   title: {
-    fontSize: 20,
+    fontSize: 24,
+    color: colors.text,
     fontWeight: "bold",
-    color: "white",
   },
   timestamp: {
     fontSize: 16,
@@ -214,6 +220,7 @@ const styles = StyleSheet.create({
   },
   summary: {
     fontSize: 16,
-    color: "white",
+    color: colors.text,
+    marginTop: backgroundTopMargin,
   },
 });
