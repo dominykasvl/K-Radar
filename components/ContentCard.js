@@ -10,7 +10,6 @@ import {
   Pressable,
   FlatList,
 } from "react-native";
-import moment from "moment";
 import MaterialIcons from "@expo/vector-icons/MaterialIcons";
 
 import { onOpenWithWebBrowser } from "../utilities/NetworkTools";
@@ -23,9 +22,16 @@ const Item = memo(
     const imageSource = item.image
       ? { uri: item.image }
       : placeholderImageSource;
-    const timestamp = moment
-      .unix(item.timestamp)
-      .format("MMMM Do YYYY, h:mm a");
+    const date = new Date(item.timestamp * 1000); // Convert UNIX timestamp to JavaScript Date object
+    const formatter = new Intl.DateTimeFormat("en-US", {
+      month: "long",
+      day: "numeric",
+      year: "numeric",
+      hour: "numeric",
+      minute: "numeric",
+      hour12: true,
+    });
+    const timestamp = formatter.format(date);
     const [summaryHeight, setSummaryHeight] = useState(0);
     const [titleHeight, setTitleHeight] = useState(0);
     const [dateHeight, setDateHeight] = useState(0);
