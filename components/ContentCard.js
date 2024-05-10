@@ -144,45 +144,47 @@ export default function ContentCard({
 
   return (
     <View style={styles.parentContainer}>
-      {Platform.OS === "web" && <ResfreshButton onRefresh={onRefresh} />}
-      <View style={styles.container}>
-        <FlatList
-          data={data}
-          renderItem={({ item }) => (
-            <Item
-              item={item}
-              placeholderImageSource={placeholderImageSource}
-              screenHeight={screenHeight}
-            />
-          )}
-          keyExtractor={(item, index) => index.toString()}
-          viewabilityConfig={{
-            itemVisiblePercentThreshold: 50, // Adjust this value as needed
-          }}
-          refreshing={refreshing}
-          onRefresh={onRefresh}
-          onScroll={handleScroll}
-          scrollEventThrottle={80}
-        />
-        <Animated.View
-          style={[
-            styles.fade,
-            {
-              opacity: scrollY.interpolate({
-                inputRange: [0, 50], // Adjust input range based on your needs
-                outputRange: [0, 1],
-                extrapolate: "clamp", // Clamp so opacity doesn't go beyond 1
-              }),
-            },
-          ]}
-        >
-          <LinearGradient
-            colors={["rgba(255,255,255,0.8)", "transparent"]}
-            start={{ x: 0, y: 0 }}
-            end={{ x: 0, y: 1 }}
-            style={styles.gradient}
+      <View style={styles.topContainer}>
+        <View style={styles.container}>
+          <FlatList
+            data={data}
+            renderItem={({ item }) => (
+              <Item
+                item={item}
+                placeholderImageSource={placeholderImageSource}
+                screenHeight={screenHeight}
+              />
+            )}
+            keyExtractor={(item, index) => index.toString()}
+            viewabilityConfig={{
+              itemVisiblePercentThreshold: 50, // Adjust this value as needed
+            }}
+            refreshing={refreshing}
+            onRefresh={onRefresh}
+            onScroll={handleScroll}
+            scrollEventThrottle={80}
           />
-        </Animated.View>
+          <Animated.View
+            style={[
+              styles.fade,
+              {
+                opacity: scrollY.interpolate({
+                  inputRange: [0, 50], // Adjust input range based on your needs
+                  outputRange: [0, 1],
+                  extrapolate: "clamp", // Clamp so opacity doesn't go beyond 1
+                }),
+              },
+            ]}
+          >
+            <LinearGradient
+              colors={["rgba(255,255,255,0.8)", "transparent"]}
+              start={{ x: 0, y: 0 }}
+              end={{ x: 0, y: 1 }}
+              style={styles.gradient}
+            />
+          </Animated.View>
+        </View>
+        {Platform.OS === "web" && <ResfreshButton onRefresh={onRefresh} />}
       </View>
     </View>
   );
@@ -193,11 +195,20 @@ const styles = StyleSheet.create({
     flex: 1,
     width: "100%",
     height: "100%",
+    marginTop: 10,
   },
   container: {
     flex: 1,
     width: "100%",
     height: "100%",
+  },
+  topContainer: {
+    flex: 1,
+    width: "100%",
+    height: "100%",
+    flexDirection: "row",
+    alignItems: "flex-start",
+    justifyContent: "space-between",
   },
   loadingContainer: {
     flex: 1,
