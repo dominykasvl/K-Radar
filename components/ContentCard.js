@@ -12,6 +12,7 @@ import {
 import MaterialIcons from "@expo/vector-icons/MaterialIcons";
 import { LinearGradient } from "expo-linear-gradient";
 import { colors } from "../assets/theme/theme";
+import ResfreshButton from "./RefreshButton";
 
 import { onOpenWithWebBrowser } from "../utilities/NetworkTools";
 
@@ -132,19 +133,6 @@ export default function ContentCard({
   onRefresh,
   screenHeight,
 }) {
-  const [isHovered, setHovered] = useState(false);
-  const [isPressed, setPressed] = useState(false);
-
-  const getButtonStyle = () => {
-    if (isPressed) {
-      return [styles.pressableRefresh, styles.pressableRefreshActive];
-    } else if (isHovered) {
-      return [styles.pressableRefresh, styles.pressableRefreshHover];
-    } else {
-      return styles.pressableRefresh;
-    }
-  };
-
   // Use useRef to maintain the animated value
   const scrollY = useRef(new Animated.Value(0)).current;
 
@@ -156,22 +144,7 @@ export default function ContentCard({
 
   return (
     <View style={styles.parentContainer}>
-      {Platform.OS === "web" && (
-        <View style={styles.refreshButtonContainer}>
-          <Pressable
-            style={getButtonStyle()}
-            onPressIn={() => setPressed(true)}
-            onPressOut={() => {
-              setPressed(false);
-              onRefresh();
-            }}
-            onMouseEnter={() => setHovered(true)}
-            onMouseLeave={() => setHovered(false)}
-          >
-            <MaterialIcons name="refresh" size={24} color="black" />
-          </Pressable>
-        </View>
-      )}
+      {Platform.OS === "web" && <ResfreshButton onRefresh={onRefresh} />}
       <View style={styles.container}>
         <FlatList
           data={data}
@@ -226,33 +199,12 @@ const styles = StyleSheet.create({
     width: "100%",
     height: "100%",
   },
-  refreshButtonContainer: {
-    padding: 10,
-    alignItems: "center",
-    justifyContent: "center",
-  },
   loadingContainer: {
     flex: 1,
     justifyContent: "center",
     alignItems: "center",
   },
-  pressableRefresh: {
-    backgroundColor: "#f0f0f0", // Light gray background
-    borderRadius: 30, // Circular button
-    width: 50, // Fixed size for the button
-    height: 50,
-    alignItems: "center",
-    justifyContent: "center",
-    boxShadow: "0 4px 6px rgba(0, 0, 0, 0.1)", // Subtle shadow
-    transition: "background-color 0.3s, transform 0.2s", // Smooth transitions for color and transform
-  },
-  pressableRefreshHover: {
-    backgroundColor: "#e0e0e0", // Slightly darker on hover
-  },
-  pressableRefreshActive: {
-    backgroundColor: "#d0d0d0", // Even darker when pressed
-    transform: [{ scale: 0.96 }], // Slightly scale down when pressed
-  },
+
   pressable: {
     position: "absolute",
     bottom: 30,
