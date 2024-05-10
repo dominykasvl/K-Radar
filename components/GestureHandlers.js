@@ -8,11 +8,7 @@ import {
 } from "react-native";
 import { PanGestureHandler, State } from "react-native-gesture-handler";
 
-export default function GestureHandlers({
-  translateXRight,
-  loadingProgress,
-  contentCard,
-}) {
+export default function GestureHandlers({ translateXRight, contentCard }) {
   const translateX = useRef(new Animated.Value(0)).current;
   const [zIndex, setZIndex] = useState(-1);
 

@@ -7,9 +7,7 @@ import { LinearGradient } from "expo-linear-gradient";
 import ContentCard from "./components/ContentCard";
 import GestureHandlers from "./components/GestureHandlers";
 
-import { useFetchAndParse } from "./hooks/useFetchAndParse";
-import config from "./config/config.json";
-import storage from "./config/storage";
+import { AppProvider } from "./context/AppContext";
 
 import { colors } from "./assets/theme/theme";
 const PlaceholderImage = require("./assets/images/background-image.png");
@@ -40,37 +38,7 @@ const App = () => {
     height: Dimensions.get("window").height,
   });
 
-  const [refreshKey, setRefreshKey] = useState(0);
-  const [data, setData] = useState(null);
-  const [loadingProgress, setLoadingProgress] = useState(false);
-
-  const url = config.website;
-
-  const { error } = useFetchAndParse(url, refreshKey, setData);
-  //console.log('data:', data);
-  if (error !== null) {
-    console.log("error:", error);
-  }
-
-  const [refreshing, setRefreshing] = useState(false);
-
   const translateXRight = useRef(new Animated.Value(0)).current;
-
-  const onRefresh = React.useCallback(() => {
-    setRefreshing(true);
-    storage
-      .clear()
-      .then(() => {
-        // Directly reset the refreshing state and increment refreshKey once storage is cleared
-        setRefreshing(false);
-        setRefreshKey(refreshKey + 1);
-        console.log("Refreshed saved data");
-      })
-      .catch((error) => {
-        console.error("Failed to clear storage:", error);
-        // Handle any errors that occur during the storage clearing
-      });
-  }, [refreshKey]);
 
   useEffect(() => {
     const onChange = ({ window }) => {
@@ -89,29 +57,27 @@ const App = () => {
   }, []);
 
   return (
-    <LinearGradient
-      colors={[colors.primary, colors.accent]} // Using defined vibrant colors
-      style={styles.gradient}
-    >
-      <GestureHandlerRootView style={styles.gestureContainer}>
-        <View style={styles.container}>
-          <GestureHandlers
-            translateXRight={translateXRight} // Pass the translateXRight ref
-            loadingProgress={loadingProgress} // Pass the loadingProgress state
-            contentCard={
-              <ContentCard
-                placeholderImageSource={PlaceholderImage}
-                data={data}
-                refreshing={refreshing}
-                onRefresh={onRefresh}
-                screenHeight={screenDimensions.height} // Pass the screenHeight value
-              />
-            }
-          ></GestureHandlers>
-          <StatusBar style="light" />
-        </View>
-      </GestureHandlerRootView>
-    </LinearGradient>
+    <AppProvider>
+      <LinearGradient
+        colors={[colors.primary, colors.accent]} // Using defined vibrant colors
+        style={styles.gradient}
+      >
+        <GestureHandlerRootView style={styles.gestureContainer}>
+          <View style={styles.container}>
+            <GestureHandlers
+              translateXRight={translateXRight} // Pass the translateXRight ref
+              contentCard={
+                <ContentCard
+                  placeholderImageSource={PlaceholderImage}
+                  screenHeight={screenDimensions.height} // Pass the screenHeight value
+                />
+              }
+            ></GestureHandlers>
+            <StatusBar style="light" />
+          </View>
+        </GestureHandlerRootView>
+      </LinearGradient>
+    </AppProvider>
   );
 };
 

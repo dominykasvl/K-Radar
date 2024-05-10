@@ -1,4 +1,4 @@
-import React, { memo, useState, useRef } from "react";
+import React, { memo, useState, useRef, useContext } from "react";
 import {
   Platform,
   StyleSheet,
@@ -14,6 +14,7 @@ import { LinearGradient } from "expo-linear-gradient";
 import { colors } from "../assets/theme/theme";
 import ResfreshButton from "./RefreshButton";
 
+import { AppContext } from "../context/AppContext";
 import { onOpenWithWebBrowser } from "../utilities/NetworkTools";
 
 const backgroundBottomMargin = 50;
@@ -126,13 +127,9 @@ const Item = memo(
   (prevProps, nextProps) => prevProps.item === nextProps.item,
 );
 
-export default function ContentCard({
-  placeholderImageSource,
-  data,
-  refreshing,
-  onRefresh,
-  screenHeight,
-}) {
+export default function ContentCard({ placeholderImageSource, screenHeight }) {
+  const { state, setState, onRefresh } = useContext(AppContext);
+
   // Use useRef to maintain the animated value
   const scrollY = useRef(new Animated.Value(0)).current;
 
@@ -147,7 +144,7 @@ export default function ContentCard({
       <View style={styles.topContainer}>
         <View style={styles.container}>
           <FlatList
-            data={data}
+            data={state.data}
             renderItem={({ item }) => (
               <Item
                 item={item}
@@ -159,7 +156,7 @@ export default function ContentCard({
             viewabilityConfig={{
               itemVisiblePercentThreshold: 50, // Adjust this value as needed
             }}
-            refreshing={refreshing}
+            refreshing={state.refreshing}
             onRefresh={onRefresh}
             onScroll={handleScroll}
             scrollEventThrottle={80}
@@ -184,7 +181,9 @@ export default function ContentCard({
             />
           </Animated.View>
         </View>
-        {Platform.OS === "web" && <ResfreshButton onRefresh={onRefresh} />}
+        {Platform.OS === "web" && state.data && (
+          <ResfreshButton onRefresh={onRefresh} />
+        )}
       </View>
     </View>
   );
