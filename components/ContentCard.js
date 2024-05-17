@@ -127,7 +127,12 @@ const Item = memo(
   (prevProps, nextProps) => prevProps.item === nextProps.item,
 );
 
-export default function ContentCard({ placeholderImageSource, screenHeight }) {
+export default function ContentCard({
+  placeholderImageSource,
+  screenHeight,
+  cardWidth,
+}) {
+  cardWidth ? cardWidth : (cardWidth = "100%");
   const { state, setState, onRefresh } = useContext(AppContext);
 
   // Use useRef to maintain the animated value
@@ -146,11 +151,21 @@ export default function ContentCard({ placeholderImageSource, screenHeight }) {
           <FlatList
             data={state.data}
             renderItem={({ item }) => (
-              <Item
-                item={item}
-                placeholderImageSource={placeholderImageSource}
-                screenHeight={screenHeight}
-              />
+              <View
+                style={{
+                  flex: 1,
+                  width: cardWidth,
+                  justifyContent: "center",
+                  alignItems: "center",
+                  alignSelf: "center",
+                }}
+              >
+                <Item
+                  item={item}
+                  placeholderImageSource={placeholderImageSource}
+                  screenHeight={screenHeight}
+                />
+              </View>
             )}
             keyExtractor={(item, index) => index.toString()}
             viewabilityConfig={{
@@ -165,6 +180,7 @@ export default function ContentCard({ placeholderImageSource, screenHeight }) {
             style={[
               styles.fade,
               {
+                width: cardWidth,
                 opacity: scrollY.interpolate({
                   inputRange: [0, 50], // Adjust input range based on your needs
                   outputRange: [0, 1],
@@ -271,9 +287,10 @@ const styles = StyleSheet.create({
   },
   fade: {
     position: "absolute",
-    left: 0,
-    right: 0,
-    top: 0,
     height: 50,
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+    alignSelf: "center",
   },
 });

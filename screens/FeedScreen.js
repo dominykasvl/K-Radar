@@ -30,11 +30,16 @@ export const FeedScreen = (props) => {
   return (
     <View style={styles.container}>
       <View
-        style={{ flex: 1, width: props.cardWidth, marginTop: props.marginTop }}
+        style={{
+          flex: 1,
+          width: "100%",
+          marginTop: props.marginTop ? props.marginTop : 0,
+        }}
       >
         <ContentCard
           placeholderImageSource={PlaceholderImage}
           screenHeight={screenDimensions.height} // Pass the screenHeight value
+          cardWidth={props.cardWidth}
         />
       </View>
     </View>
