@@ -1,169 +1,296 @@
-import React, { memo, useState, useRef } from 'react';
-import { Platform, RefreshControl, StyleSheet, Image, Text, View, ActivityIndicator, Pressable, FlatList } from 'react-native';
-import moment from 'moment';
-import MaterialIcons from '@expo/vector-icons/MaterialIcons';
-import { Dimensions } from 'react-native';
+import React, { memo, useState, useRef, useContext } from "react";
+import {
+  Platform,
+  StyleSheet,
+  Image,
+  Text,
+  View,
+  Pressable,
+  FlatList,
+  Animated,
+} from "react-native";
+import MaterialIcons from "@expo/vector-icons/MaterialIcons";
+import { LinearGradient } from "expo-linear-gradient";
+import { colors } from "../assets/theme/theme";
+import ResfreshButton from "./RefreshButton";
 
-const screenHeight = Dimensions.get('window').height;
-const screenWidth = Dimensions.get('window').width;
+import { AppContext } from "../context/AppContext";
+import { onOpenWithWebBrowser } from "../utilities/NetworkTools";
+
 const backgroundBottomMargin = 50;
+const backgroundTopMargin = 10;
 
-const Item = memo(({ item, onPress, placeholderImageSource }) => {
+const Item = memo(
+  ({ item, placeholderImageSource, screenHeight }) => {
     const [showSummary, setShowSummary] = useState(false);
-    const imageSource = item.image ? { uri: item.image } : placeholderImageSource;
-    const timestamp = moment.unix(item.timestamp).format('MMMM Do YYYY, h:mm a');
+    const imageSource = item.image
+      ? { uri: item.image }
+      : placeholderImageSource;
+    const date = new Date(item.timestamp * 1000); // Convert UNIX timestamp to JavaScript Date object
+    const formatter = new Intl.DateTimeFormat("en-US", {
+      month: "long",
+      day: "numeric",
+      year: "numeric",
+      hour: "numeric",
+      minute: "numeric",
+      hour12: true,
+    });
+    const timestamp = formatter.format(date);
     const [summaryHeight, setSummaryHeight] = useState(0);
     const [titleHeight, setTitleHeight] = useState(0);
     const [dateHeight, setDateHeight] = useState(0);
 
     const backgroundStyle = {
-        position: 'absolute',
-        left: 0,
-        right: 0,
-        bottom: 0,
-        borderRadius: 18,
-        backgroundColor: 'rgba(0, 0, 0, 0.6)', // Semi-transparent background
-        height: showSummary ? summaryHeight + titleHeight + dateHeight + backgroundBottomMargin : titleHeight + dateHeight + backgroundBottomMargin, // Adjust this value as needed
-        width: screenWidth,
+      position: "absolute",
+      bottom: 10,
+      borderRadius: 18,
+      backgroundColor: "rgba(0, 0, 0, 0.6)", // Semi-transparent background
+      height: showSummary
+        ? summaryHeight +
+          titleHeight +
+          dateHeight +
+          backgroundBottomMargin +
+          backgroundTopMargin
+        : titleHeight + dateHeight + backgroundBottomMargin, // Adjust this value as needed
+      alignSelf: "center",
+    };
+
+    const image = {
+      height: screenHeight * 0.5,
+      borderRadius: 18,
+      marginBottom: 10,
+      alignSelf: "center",
+    };
+
+    const [isPressed, setIsPressed] = useState(false);
+
+    const handlePressIn = () => {
+      setIsPressed(true);
+      setShowSummary(true);
+    };
+
+    const handlePressOut = () => {
+      setIsPressed(false);
+      setShowSummary(false);
     };
 
     return (
-        <Pressable
-            onPressIn={() => setShowSummary(true)}
-            onPressOut={() => setShowSummary(false)}
-            style={styles.imageContainer}
-        >
-            <Image source={imageSource} style={styles.image} resizeMode='cover' />
-            <View style={backgroundStyle} >
-                <View style={styles.textContainer}>
-                <Text style={styles.title} onLayout={(event) => setTitleHeight(event.nativeEvent.layout.height + 5)}>
-                    {item.title}
-                </Text>
-                <Text style={styles.timestamp} onLayout={(event) => setDateHeight(event.nativeEvent.layout.height)}>
-                    {timestamp}
-                </Text>
-                    {showSummary && (
-                        <Text style={styles.summary} onLayout={(event) => setSummaryHeight(event.nativeEvent.layout.height)}>
-                            {item.summary || 'Loading summaries...'}
-                        </Text>
-                    )}
-                </View>
-            </View>
-            {/* <Pressable onPress={() => onPress(item.link)} style={styles.pressable}>
-                <MaterialIcons name="open-in-browser" size={32} color="white" />
-            </Pressable> */}
-        </Pressable>
-    );
-}, (prevProps, nextProps) => prevProps.item === nextProps.item && prevProps.onPress === nextProps.onPress);
-
-
-export default function ContentCard({ placeholderImageSource, data, onPress, refreshing, onRefresh, showWebView, setCurrentIndex }) {
-    const onViewableItemsChanged = useRef(({ viewableItems }) => {
-        if (viewableItems.length > 0) {
-          setCurrentIndex(viewableItems[0].index);
-        }
-      }).current;
-
-    return (
-        <View style={styles.parentContainer}>
-            {Platform.OS === 'web' && (
-                <View style={styles.refreshButtonContainer}>
-                    <Pressable style={styles.pressableRefresh} onPress={onRefresh}>
-                        <MaterialIcons name="refresh" size={24} color="black" />
-                    </Pressable>
-                </View>
+      <Pressable
+        onHoverIn={() => handlePressIn()}
+        onHoverOut={() => handlePressOut()}
+        style={styles.imageContainer}
+        onPress={() => onOpenWithWebBrowser(item.link)}
+      >
+        <Image
+          source={imageSource}
+          style={[image, { width: isPressed ? "100%" : "90%" }]}
+          resizeMode="auto"
+        />
+        <View style={[backgroundStyle, { width: isPressed ? "100%" : "90%" }]}>
+          <View style={styles.textContainer}>
+            <Text
+              style={styles.title}
+              onLayout={(event) =>
+                setTitleHeight(event.nativeEvent.layout.height + 5)
+              }
+            >
+              {item.title}
+            </Text>
+            <Text
+              style={styles.timestamp}
+              onLayout={(event) =>
+                setDateHeight(event.nativeEvent.layout.height)
+              }
+            >
+              {timestamp}
+            </Text>
+            {showSummary && (
+              <Text
+                style={styles.summary}
+                onLayout={(event) =>
+                  setSummaryHeight(event.nativeEvent.layout.height)
+                }
+              >
+                {item.summary || "Loading summaries..."}
+              </Text>
             )}
-            <View style={styles.container}>
-                <FlatList
-                    data={data}
-                    renderItem={({ item }) => <Item item={item} onPress={onPress} placeholderImageSource={placeholderImageSource} />}
-                    keyExtractor={(item, index) => index.toString()}
-                    pagingEnabled
-                    onViewableItemsChanged={onViewableItemsChanged}
-                    viewabilityConfig={{
-                        itemVisiblePercentThreshold: 50 // Adjust this value as needed
-                    }}
-                    refreshing={refreshing}
-                    onRefresh={onRefresh}
-                    scrollEnabled={!showWebView} // Disable scrolling when the WebView is shown
-                />
-            </View>
+          </View>
         </View>
+        {isPressed && (
+          <Pressable style={styles.pressable}>
+            <MaterialIcons name="open-in-browser" size={32} color="white" />
+          </Pressable>
+        )}
+      </Pressable>
     );
-};
+  },
+  (prevProps, nextProps) => prevProps.item === nextProps.item,
+);
+
+export default function ContentCard({
+  placeholderImageSource,
+  screenHeight,
+  cardWidth,
+}) {
+  cardWidth ? cardWidth : (cardWidth = "100%");
+  const { state, setState, onRefresh, isMobileDevice } = useContext(AppContext);
+
+  // Use useRef to maintain the animated value
+  const scrollY = useRef(new Animated.Value(0)).current;
+
+  // Animated event for binding the scroll to the animated value
+  const handleScroll = Animated.event(
+    [{ nativeEvent: { contentOffset: { y: scrollY } } }],
+    { useNativeDriver: true },
+  );
+
+  return (
+    <View style={styles.parentContainer}>
+      <View style={styles.topContainer}>
+        <View style={styles.container}>
+          <FlatList
+            data={state.data}
+            renderItem={({ item }) => (
+              <View
+                style={{
+                  flex: 1,
+                  width: cardWidth,
+                  justifyContent: "center",
+                  alignItems: "center",
+                  alignSelf: "center",
+                }}
+              >
+                <Item
+                  item={item}
+                  placeholderImageSource={placeholderImageSource}
+                  screenHeight={screenHeight}
+                />
+              </View>
+            )}
+            keyExtractor={(item, index) => index.toString()}
+            viewabilityConfig={{
+              itemVisiblePercentThreshold: 50, // Adjust this value as needed
+            }}
+            refreshing={state.refreshing}
+            onRefresh={onRefresh}
+            onScroll={handleScroll}
+            scrollEventThrottle={80}
+          />
+          <Animated.View
+            style={[
+              styles.fade,
+              {
+                width: cardWidth,
+                opacity: scrollY.interpolate({
+                  inputRange: [0, 50], // Adjust input range based on your needs
+                  outputRange: [0, 1],
+                  extrapolate: "clamp", // Clamp so opacity doesn't go beyond 1
+                }),
+              },
+            ]}
+          >
+            <LinearGradient
+              colors={["rgba(255,255,255,0.8)", "transparent"]}
+              start={{ x: 0, y: 0 }}
+              end={{ x: 0, y: 1 }}
+              style={styles.gradient}
+            />
+          </Animated.View>
+        </View>
+        {!isMobileDevice && state.data && (
+          <ResfreshButton onRefresh={onRefresh} />
+        )}
+      </View>
+    </View>
+  );
+}
 
 const styles = StyleSheet.create({
-    parentContainer: {
-        flex: 1,
-    },
-    container: {
-        flex: 1,
-    },
-    refreshButtonContainer: {
-        padding: 10,
-    },
-    loadingContainer: {
-        flex: 1,
-        justifyContent: 'center',
-        alignItems: 'center',
-    },
-    pressableRefresh: {
-        position: 'absolute',
-        top: 0,
-        bottom: 0,
-        left: 0,
-        right: 0,
-        justifyContent: 'center',
-        alignItems: 'center',
-    },
-    pressable: {
-      position: 'absolute',
-      bottom: 20,
-      right: 20,
-      paddingRight: 5,
+  parentContainer: {
+    flex: 1,
+    width: "100%",
+    height: "100%",
   },
-    imageContainer: {
-        height: screenHeight,
-      position: 'relative',
+  container: {
+    flex: 1,
+    width: "100%",
+    height: "100%",
   },
-    image: {
-        width: screenWidth,
-        height: screenHeight,
-        borderRadius: 18,
-    },
-    textContainer: {
-        position: 'absolute',
-        left: 0,
-        right: 0,
-        bottom: 0,
-        justifyContent: 'flex-end',
-        alignItems: 'flex-start',
-        paddingLeft: 10, // Add left padding
-        //backgroundColor: 'rgba(0, 0, 0, 0.3)', // Semi-transparent background
-        marginBottom: backgroundBottomMargin, // Adjust this value as needed
-        width: screenWidth, // Add this line
-    },
-    background: {
-        position: 'absolute',
-        left: 0,
-        right: 0,
-        bottom: 0,
-        borderRadius: 18,
-        backgroundColor: 'rgba(0, 0, 0, 0.6)', // Semi-transparent background
-        height: 120, // Adjust this value as needed
-        width: screenWidth,
-    },
+  topContainer: {
+    flex: 1,
+    width: "100%",
+    height: "100%",
+    flexDirection: "row",
+    alignItems: "flex-start",
+    justifyContent: "space-between",
+  },
+  loadingContainer: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+  },
+
+  pressable: {
+    position: "absolute",
+    bottom: 30,
+    right: 20,
+    paddingRight: 5,
+  },
+  imageContainer: {
+    width: "100%",
+    height: "100%",
+    position: "relative",
+  },
+  textContainer: {
+    width: "100%",
+    height: "100%",
+    position: "absolute",
+    left: 0,
+    right: 0,
+    bottom: 0,
+    justifyContent: "flex-end",
+    alignItems: "flex-start",
+    paddingLeft: 10, // Add left padding
+    //backgroundColor: 'rgba(0, 0, 0, 0.3)', // Semi-transparent background
+    marginBottom: backgroundBottomMargin, // Adjust this value as needed
+  },
+  background: {
+    position: "absolute",
+    left: 0,
+    right: 0,
+    bottom: 0,
+    borderRadius: 18,
+    backgroundColor: "rgba(0, 0, 0, 0.6)", // Semi-transparent background
+    height: 120, // Adjust this value as needed
+    width: "100%",
+  },
   title: {
-      fontSize: 20,
-      fontWeight: 'bold',
-      color: 'white',
+    fontSize: 24,
+    color: colors.text,
+    fontWeight: "bold",
   },
   timestamp: {
-      fontSize: 16,
-      color: 'white',
+    fontSize: 16,
+    color: "white",
   },
   summary: {
     fontSize: 16,
-    color: 'white',
-    },
+    color: colors.text,
+    marginTop: backgroundTopMargin,
+  },
+  gradient: {
+    position: "absolute",
+    left: 0,
+    right: 0,
+    top: 0,
+    height: 50,
+  },
+  fade: {
+    position: "absolute",
+    height: 50,
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+    alignSelf: "center",
+  },
 });
