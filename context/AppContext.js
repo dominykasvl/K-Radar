@@ -15,6 +15,12 @@ export const AppProvider = ({ children }) => {
 
   const url = config.website;
 
+  const userAgent = window.navigator.userAgent;
+  const isMobileDevice =
+    /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(
+      userAgent,
+    );
+
   const updateData = (newData) => {
     setState((prevState) => ({ ...prevState, data: newData }));
   };
@@ -53,6 +59,7 @@ export const AppProvider = ({ children }) => {
     state,
     setState,
     onRefresh,
+    isMobileDevice,
   };
 
   return <AppContext.Provider value={value}>{children}</AppContext.Provider>;

@@ -133,7 +133,7 @@ export default function ContentCard({
   cardWidth,
 }) {
   cardWidth ? cardWidth : (cardWidth = "100%");
-  const { state, setState, onRefresh } = useContext(AppContext);
+  const { state, setState, onRefresh, isMobileDevice } = useContext(AppContext);
 
   // Use useRef to maintain the animated value
   const scrollY = useRef(new Animated.Value(0)).current;
@@ -197,7 +197,7 @@ export default function ContentCard({
             />
           </Animated.View>
         </View>
-        {Platform.OS === "web" && state.data && (
+        {!isMobileDevice && state.data && (
           <ResfreshButton onRefresh={onRefresh} />
         )}
       </View>
