@@ -5,7 +5,7 @@ import { colors } from "../assets/theme/theme";
 import { onOpenWithWebBrowser } from "../utilities/NetworkTools";
 
 const ContentCard = memo(
-  function ContentList({
+  function ContentCard({
     item,
     placeholderImageSource,
     screenHeight,
