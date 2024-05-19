@@ -13,6 +13,7 @@ import MaterialIcons from "@expo/vector-icons/MaterialIcons";
 import { LinearGradient } from "expo-linear-gradient";
 import { colors } from "../assets/theme/theme";
 import ResfreshButton from "./RefreshButton";
+import usePullToRefresh from "../hooks/usePullToRefresh";
 
 import { AppContext } from "../context/AppContext";
 import { onOpenWithWebBrowser } from "../utilities/NetworkTools";
@@ -163,11 +164,14 @@ export default function ContentCard({
     { useNativeDriver: true },
   );
 
+  const panHandlers = usePullToRefresh(onRefresh); // Custom hook for web pull-to-refresh
+
   return (
     <View style={styles.parentContainer}>
       <View style={styles.topContainer}>
         <View style={styles.container}>
           <FlatList
+            {...(Platform.OS === "web" ? panHandlers : {})} // Apply panHandlers only for web
             data={state.data}
             renderItem={({ item }) => (
               <View
