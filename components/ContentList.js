@@ -144,7 +144,7 @@ const Item = memo(
   (prevProps, nextProps) => prevProps.item === nextProps.item,
 );
 
-export default function ContentCard({
+export default function ContentList({
   placeholderImageSource,
   screenHeight,
   cardWidth,

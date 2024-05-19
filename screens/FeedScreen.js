@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { View, StyleSheet, Dimensions } from "react-native";
 
-import ContentCard from "../components/ContentCard";
+import ContentList from "../components/ContentList";
 const PlaceholderImage = require("../assets/images/background-image.png");
 
 export const FeedScreen = (props) => {
@@ -36,7 +36,7 @@ export const FeedScreen = (props) => {
           marginTop: props.marginTop ? props.marginTop : 0,
         }}
       >
-        <ContentCard
+        <ContentList
           placeholderImageSource={PlaceholderImage}
           screenHeight={screenDimensions.height} // Pass the screenHeight value
           cardWidth={props.cardWidth}
