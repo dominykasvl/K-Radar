@@ -17,11 +17,15 @@ import ResfreshButton from "./RefreshButton";
 import { AppContext } from "../context/AppContext";
 import { onOpenWithWebBrowser } from "../utilities/NetworkTools";
 
-const backgroundBottomMargin = 50;
-const backgroundTopMargin = 10;
-
 const Item = memo(
-  ({ item, placeholderImageSource, screenHeight }) => {
+  ({
+    item,
+    placeholderImageSource,
+    screenHeight,
+    isMobileDevice,
+    backgroundBottomMargin,
+    backgroundTopMargin,
+  }) => {
     const [showSummary, setShowSummary] = useState(false);
     const imageSource = item.image
       ? { uri: item.image }
@@ -87,9 +91,14 @@ const Item = memo(
           resizeMode="auto"
         />
         <View style={[backgroundStyle, { width: isPressed ? "100%" : "90%" }]}>
-          <View style={styles.textContainer}>
+          <View
+            style={[
+              styles.textContainer,
+              { marginBottom: backgroundBottomMargin },
+            ]}
+          >
             <Text
-              style={styles.title}
+              style={isMobileDevice ? styles.titleMobile : styles.titleDesktop}
               onLayout={(event) =>
                 setTitleHeight(event.nativeEvent.layout.height + 5)
               }
@@ -97,7 +106,11 @@ const Item = memo(
               {item.title}
             </Text>
             <Text
-              style={styles.timestamp}
+              style={
+                isMobileDevice
+                  ? styles.timestampMobile
+                  : styles.timestampDesktop
+              }
               onLayout={(event) =>
                 setDateHeight(event.nativeEvent.layout.height)
               }
@@ -106,7 +119,10 @@ const Item = memo(
             </Text>
             {showSummary && (
               <Text
-                style={styles.summary}
+                style={[
+                  isMobileDevice ? styles.summaryMobile : styles.summaryDesktop,
+                  { marginTop: backgroundTopMargin },
+                ]}
                 onLayout={(event) =>
                   setSummaryHeight(event.nativeEvent.layout.height)
                 }
@@ -134,6 +150,9 @@ export default function ContentCard({
 }) {
   cardWidth ? cardWidth : (cardWidth = "100%");
   const { state, setState, onRefresh, isMobileDevice } = useContext(AppContext);
+
+  const backgroundBottomMargin = isMobileDevice ? 10 : 50;
+  const backgroundTopMargin = 10;
 
   // Use useRef to maintain the animated value
   const scrollY = useRef(new Animated.Value(0)).current;
@@ -164,6 +183,9 @@ export default function ContentCard({
                   item={item}
                   placeholderImageSource={placeholderImageSource}
                   screenHeight={screenHeight}
+                  isMobileDevice={isMobileDevice}
+                  backgroundBottomMargin={backgroundBottomMargin}
+                  backgroundTopMargin={backgroundTopMargin}
                 />
               </View>
             )}
@@ -252,7 +274,6 @@ const styles = StyleSheet.create({
     alignItems: "flex-start",
     paddingLeft: 10, // Add left padding
     //backgroundColor: 'rgba(0, 0, 0, 0.3)', // Semi-transparent background
-    marginBottom: backgroundBottomMargin, // Adjust this value as needed
   },
   background: {
     position: "absolute",
@@ -264,19 +285,31 @@ const styles = StyleSheet.create({
     height: 120, // Adjust this value as needed
     width: "100%",
   },
-  title: {
+  titleDesktop: {
     fontSize: 24,
     color: colors.text,
     fontWeight: "bold",
   },
-  timestamp: {
+  titleMobile: {
+    fontSize: 18,
+    color: colors.text,
+    fontWeight: "bold",
+  },
+  timestampDesktop: {
     fontSize: 16,
     color: "white",
   },
-  summary: {
+  timestampMobile: {
+    fontSize: 14,
+    color: "white",
+  },
+  summaryDesktop: {
     fontSize: 16,
     color: colors.text,
-    marginTop: backgroundTopMargin,
+  },
+  summaryMobile: {
+    fontSize: 14,
+    color: colors.text,
   },
   gradient: {
     position: "absolute",
