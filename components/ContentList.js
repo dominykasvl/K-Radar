@@ -1,7 +1,7 @@
-import React, { useRef, useContext } from "react";
+import React, { useRef, useContext, useState } from "react";
 import { Platform, StyleSheet, View, FlatList, Animated } from "react-native";
 import { LinearGradient } from "expo-linear-gradient";
-import { colors } from "../assets/theme/theme";
+import Popup from "./ContentCardPopup";
 import ResfreshButton from "./RefreshButton";
 import usePullToRefresh from "../hooks/usePullToRefresh";
 import ContentCard from "./ContentCard";
@@ -28,14 +28,24 @@ export default function ContentList({
     { useNativeDriver: true },
   );
 
-  const panHandlers = usePullToRefresh(onRefresh); // Custom hook for web pull-to-refresh
+  //const panHandlers = usePullToRefresh(onRefresh); // Custom hook for web pull-to-refresh
+
+  const [selectedItem, setSelectedItem] = useState(null);
+
+  const handleItemPress = (item) => {
+    setSelectedItem(item);
+  };
+
+  const handleClosePopup = () => {
+    setSelectedItem(null);
+  };
 
   return (
     <View style={styles.parentContainer}>
       <View style={styles.topContainer}>
         <View style={styles.container}>
           <FlatList
-            {...(Platform.OS === "web" ? panHandlers : {})} // Apply panHandlers only for web
+            // {...(Platform.OS === "web" ? panHandlers : {})} // Apply panHandlers only for web
             data={state.data}
             renderItem={({ item }) => (
               <View
@@ -54,6 +64,7 @@ export default function ContentList({
                   isMobileDevice={isMobileDevice}
                   backgroundBottomMargin={backgroundBottomMargin}
                   backgroundTopMargin={backgroundTopMargin}
+                  handleItemPress={handleItemPress}
                 />
               </View>
             )}
@@ -65,6 +76,11 @@ export default function ContentList({
             onRefresh={onRefresh}
             onScroll={handleScroll}
             scrollEventThrottle={80}
+          />
+          <Popup
+            visible={selectedItem !== null}
+            item={selectedItem}
+            onClose={handleClosePopup}
           />
           <Animated.View
             style={[

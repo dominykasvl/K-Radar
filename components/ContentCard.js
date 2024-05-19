@@ -12,6 +12,7 @@ const ContentCard = memo(
     isMobileDevice,
     backgroundBottomMargin,
     backgroundTopMargin,
+    handleItemPress,
   }) {
     const [showSummary, setShowSummary] = useState(false);
     const imageSource = item.image
@@ -70,7 +71,11 @@ const ContentCard = memo(
         onHoverIn={() => handlePressIn()}
         onHoverOut={() => handlePressOut()}
         style={styles.imageContainer}
-        onPress={() => onOpenWithWebBrowser(item.link)}
+        onPress={
+          isMobileDevice
+            ? () => handleItemPress(item)
+            : () => onOpenWithWebBrowser(item.link)
+        }
       >
         <Image
           source={imageSource}
