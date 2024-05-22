@@ -1,27 +1,19 @@
-import React, { memo, useState, useRef, useContext } from "react";
-import {
-  Platform,
-  StyleSheet,
-  Image,
-  Text,
-  View,
-  Pressable,
-  FlatList,
-  Animated,
-} from "react-native";
+import React, { memo, useState } from "react";
+import { StyleSheet, Image, Text, View, Pressable } from "react-native";
 import MaterialIcons from "@expo/vector-icons/MaterialIcons";
-import { LinearGradient } from "expo-linear-gradient";
 import { colors } from "../assets/theme/theme";
-import ResfreshButton from "./RefreshButton";
-
-import { AppContext } from "../context/AppContext";
 import { onOpenWithWebBrowser } from "../utilities/NetworkTools";
 
-const backgroundBottomMargin = 50;
-const backgroundTopMargin = 10;
-
-const Item = memo(
-  ({ item, placeholderImageSource, screenHeight }) => {
+const ContentCard = memo(
+  function ContentCard({
+    item,
+    placeholderImageSource,
+    screenHeight,
+    isMobileDevice,
+    backgroundBottomMargin,
+    backgroundTopMargin,
+    handleItemPress,
+  }) {
     const [showSummary, setShowSummary] = useState(false);
     const imageSource = item.image
       ? { uri: item.image }
@@ -79,7 +71,11 @@ const Item = memo(
         onHoverIn={() => handlePressIn()}
         onHoverOut={() => handlePressOut()}
         style={styles.imageContainer}
-        onPress={() => onOpenWithWebBrowser(item.link)}
+        onPress={
+          isMobileDevice
+            ? () => handleItemPress(item)
+            : () => onOpenWithWebBrowser(item.link)
+        }
       >
         <Image
           source={imageSource}
@@ -87,9 +83,14 @@ const Item = memo(
           resizeMode="auto"
         />
         <View style={[backgroundStyle, { width: isPressed ? "100%" : "90%" }]}>
-          <View style={styles.textContainer}>
+          <View
+            style={[
+              styles.textContainer,
+              { marginBottom: backgroundBottomMargin },
+            ]}
+          >
             <Text
-              style={styles.title}
+              style={isMobileDevice ? styles.titleMobile : styles.titleDesktop}
               onLayout={(event) =>
                 setTitleHeight(event.nativeEvent.layout.height + 5)
               }
@@ -97,7 +98,11 @@ const Item = memo(
               {item.title}
             </Text>
             <Text
-              style={styles.timestamp}
+              style={
+                isMobileDevice
+                  ? styles.timestampMobile
+                  : styles.timestampDesktop
+              }
               onLayout={(event) =>
                 setDateHeight(event.nativeEvent.layout.height)
               }
@@ -106,7 +111,10 @@ const Item = memo(
             </Text>
             {showSummary && (
               <Text
-                style={styles.summary}
+                style={[
+                  isMobileDevice ? styles.summaryMobile : styles.summaryDesktop,
+                  { marginTop: backgroundTopMargin },
+                ]}
                 onLayout={(event) =>
                   setSummaryHeight(event.nativeEvent.layout.height)
                 }
@@ -127,109 +135,7 @@ const Item = memo(
   (prevProps, nextProps) => prevProps.item === nextProps.item,
 );
 
-export default function ContentCard({
-  placeholderImageSource,
-  screenHeight,
-  cardWidth,
-}) {
-  cardWidth ? cardWidth : (cardWidth = "100%");
-  const { state, setState, onRefresh, isMobileDevice } = useContext(AppContext);
-
-  // Use useRef to maintain the animated value
-  const scrollY = useRef(new Animated.Value(0)).current;
-
-  // Animated event for binding the scroll to the animated value
-  const handleScroll = Animated.event(
-    [{ nativeEvent: { contentOffset: { y: scrollY } } }],
-    { useNativeDriver: true },
-  );
-
-  return (
-    <View style={styles.parentContainer}>
-      <View style={styles.topContainer}>
-        <View style={styles.container}>
-          <FlatList
-            data={state.data}
-            renderItem={({ item }) => (
-              <View
-                style={{
-                  flex: 1,
-                  width: cardWidth,
-                  justifyContent: "center",
-                  alignItems: "center",
-                  alignSelf: "center",
-                }}
-              >
-                <Item
-                  item={item}
-                  placeholderImageSource={placeholderImageSource}
-                  screenHeight={screenHeight}
-                />
-              </View>
-            )}
-            keyExtractor={(item, index) => index.toString()}
-            viewabilityConfig={{
-              itemVisiblePercentThreshold: 50, // Adjust this value as needed
-            }}
-            refreshing={state.refreshing}
-            onRefresh={onRefresh}
-            onScroll={handleScroll}
-            scrollEventThrottle={80}
-          />
-          <Animated.View
-            style={[
-              styles.fade,
-              {
-                width: cardWidth,
-                opacity: scrollY.interpolate({
-                  inputRange: [0, 50], // Adjust input range based on your needs
-                  outputRange: [0, 1],
-                  extrapolate: "clamp", // Clamp so opacity doesn't go beyond 1
-                }),
-              },
-            ]}
-          >
-            <LinearGradient
-              colors={["rgba(255,255,255,0.8)", "transparent"]}
-              start={{ x: 0, y: 0 }}
-              end={{ x: 0, y: 1 }}
-              style={styles.gradient}
-            />
-          </Animated.View>
-        </View>
-        {!isMobileDevice && state.data && (
-          <ResfreshButton onRefresh={onRefresh} />
-        )}
-      </View>
-    </View>
-  );
-}
-
 const styles = StyleSheet.create({
-  parentContainer: {
-    flex: 1,
-    width: "100%",
-    height: "100%",
-  },
-  container: {
-    flex: 1,
-    width: "100%",
-    height: "100%",
-  },
-  topContainer: {
-    flex: 1,
-    width: "100%",
-    height: "100%",
-    flexDirection: "row",
-    alignItems: "flex-start",
-    justifyContent: "space-between",
-  },
-  loadingContainer: {
-    flex: 1,
-    justifyContent: "center",
-    alignItems: "center",
-  },
-
   pressable: {
     position: "absolute",
     bottom: 30,
@@ -252,7 +158,6 @@ const styles = StyleSheet.create({
     alignItems: "flex-start",
     paddingLeft: 10, // Add left padding
     //backgroundColor: 'rgba(0, 0, 0, 0.3)', // Semi-transparent background
-    marginBottom: backgroundBottomMargin, // Adjust this value as needed
   },
   background: {
     position: "absolute",
@@ -264,33 +169,32 @@ const styles = StyleSheet.create({
     height: 120, // Adjust this value as needed
     width: "100%",
   },
-  title: {
+  titleDesktop: {
     fontSize: 24,
     color: colors.text,
     fontWeight: "bold",
   },
-  timestamp: {
+  titleMobile: {
+    fontSize: 18,
+    color: colors.text,
+    fontWeight: "bold",
+  },
+  timestampDesktop: {
     fontSize: 16,
     color: "white",
   },
-  summary: {
+  timestampMobile: {
+    fontSize: 14,
+    color: "white",
+  },
+  summaryDesktop: {
     fontSize: 16,
     color: colors.text,
-    marginTop: backgroundTopMargin,
   },
-  gradient: {
-    position: "absolute",
-    left: 0,
-    right: 0,
-    top: 0,
-    height: 50,
-  },
-  fade: {
-    position: "absolute",
-    height: 50,
-    flex: 1,
-    justifyContent: "center",
-    alignItems: "center",
-    alignSelf: "center",
+  summaryMobile: {
+    fontSize: 14,
+    color: colors.text,
   },
 });
+
+export default ContentCard;
